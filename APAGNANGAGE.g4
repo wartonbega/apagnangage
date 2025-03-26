@@ -9,9 +9,11 @@ INT: 'A'+ | ('AA' | DECIMAL_SEPARATOR) ('A'* DECIMAL_SEPARATOR)*; // using decim
 
 PRINT: 'POV';
 
-ASSIGN: 'QUOI';
+ASSIGN: 'DANS';
 
-FUNCTION_CALL: 'FEUR';
+FUNCTION_DEF: 'QUOI' WS* 'FEUR';
+FUNCTION_CALL: 'QUOI';
+RETURN: 'FEUR';
 
 BLOCK_START: 'FAIT';
 BLOCK_END: 'BELECK';
@@ -34,7 +36,7 @@ IF: 'GENRE';
 fragment STRING_START: 'TU' WS* 'FAIS' WS* 'UN' WS?;
 fragment STRING_CONTENT: (.*?);
 
-STRING_ASSIGN: STRING_START (.*?) WS? 'DANS';
+STRING_ASSIGN: STRING_START (.*?) WS? ASSIGN;
 STRING_LINE: STRING_START ((~[D\n] | 'D' ~'A' | 'DA' ~'N' | 'DAN' ~'S')*); // no 'DANS' allowed in string
 
 COMMENT: 'CRARI' (~'\n')* -> skip;
@@ -51,20 +53,31 @@ program
 statement
     : assignment
     | function_call
+    | function_def
     | print
     | print_assign_string
     | loop
     | if
     | BREAK
+    | return
     | increment
     ;
 
 assignment
-    : ID ASSIGN expression
+    : expression ASSIGN ID
     ;
 
 expression 
-    : (PLUS | MINUS | MULTIPLY | DIVIDE | EQUALS | function_call | INT | ID)+;
+    : ( PLUS
+      | MINUS
+      | MULTIPLY
+      | DIVIDE
+      | EQUALS
+      | function_call
+      | INT
+      | ID
+      ) +
+    ;
 
 function_call
     : FUNCTION_CALL ID
@@ -99,4 +112,17 @@ block
 
 increment
     : LOOP_COUNTER ID
+    ;
+
+function_def
+    : FUNCTION_DEF
+      BLOCK_START
+      statement *
+      BLOCK_END ?
+      ASSIGN
+      ID
+    ;
+
+return
+    : RETURN expression ?
     ;
