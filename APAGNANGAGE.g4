@@ -63,16 +63,8 @@ assignment
     : ID ASSIGN expression
     ;
 
-expression
-    : math
-    | function_call
-    | INT
-    | ID
-    ;
-
-math
-    : (PLUS | MINUS | MULTIPLY | DIVIDE | EQUALS) expression expression
-    ;
+expression 
+    : (PLUS | MINUS | MULTIPLY | DIVIDE | EQUALS | function_call | INT | ID)+;
 
 function_call
     : FUNCTION_CALL ID

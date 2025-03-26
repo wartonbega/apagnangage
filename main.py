@@ -17,13 +17,13 @@ if __name__ == '__main__':
     #################################################
     # Parsing des arguments de la ligne de commande #
     #################################################
-    options_parser = argparse.ArgumentParser(
+    argument_parser = argparse.ArgumentParser(
         prog="Interpréteur de l'APAGNANGAGE",
         description="Interpète l'APAGNANGAGE",
-        epilog="POV TU FAIT UN APAGNAN DANS L'INTERPRÉTEUR DE L'APAGNANGAAAAAAAAGE (APAGNAAAAAAAAAAA)",
+        epilog="POV TU FAIT UN APAGNAN DANS L'INTERPRÉTEUR DE L'APAGNANGAGE (APAGNAAAAAAAAAAA)",
     )
-    options_parser.add_argument("filename")
-    args = options_parser.parse_args()
+    argument_parser.add_argument("filename")
+    args = argument_parser.parse_args()
     input_file_name = args.filename
     
     input_stream = uf.readfile(input_file_name)
