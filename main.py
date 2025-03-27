@@ -1,5 +1,6 @@
 
 # Parser pour les options de bash (-o -i --HEEEEEELP ...)
+import os
 import argparse
 
 # Lexer et parser APAGNAN
@@ -28,6 +29,12 @@ if __name__ == '__main__':
     
     input_stream = uf.readfile(input_file_name)
     
+    
+    double_check = input("Chemin complet du fichier d'entrée : ")
+    check = os.popen("pwd").read().strip() + "/" + input_file_name
+    if double_check != check:
+        print("Le nom du fichier d'entrée et l'input ne correspondent pas !!!!! 👿🤬")
+        exit(1)
 
     #################################################
     # Parsing du/des fichiers d'entrée              #
