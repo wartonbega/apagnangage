@@ -4,6 +4,7 @@ from APAGNANGAGEParser import APAGNANGAGEParser as Parser
 from APAGNANGAGEVisitor import APAGNANGAGEVisitor
 
 import errors
+from special_return import *
 
 def convert_int(int_repr: str) -> int:
     sp = re.split("(AP|AGN|AN)", int_repr)
@@ -52,16 +53,17 @@ class Visitor(APAGNANGAGEVisitor):
         main_var_scope = VariableScope(None)
         self.current = "main"
         self.call_stack = [("main", main_var_scope)]
-        self.functions = {}
+        self.functions: dict[str, Parser.StatementContext] = {}
     
     # Visit a parse tree produced by Parser#program.
     def visitProgram(self, ctx:Parser.ProgramContext):
         return self.visitChildren(ctx)
 
+
     # Visit a parse tree produced by Parser#statement.
     def visitStatement(self, ctx:Parser.StatementContext):
         return self.visitChildren(ctx)
-
+    
 
     # Visit a parse tree produced by Parser#assignment.
     def visitAssignment(self, ctx:Parser.AssignmentContext):
@@ -79,7 +81,7 @@ class Visitor(APAGNANGAGEVisitor):
                 case Parser.OperatorContext():
                     operators.append(exp.getText())
                 case Parser.Function_callContext():
-                    values.append(exp.getText())
+                    values.append(self.visitFunction_call(exp))
                 case Parser.Expression_intContext():
                     values.append(convert_int(exp.getText()))
                 case _: # C'est un identifiant
@@ -106,22 +108,32 @@ class Visitor(APAGNANGAGEVisitor):
                 aggregate *= val
             elif op == '/':
                 aggregate /= val
-            elif re.match(r"c\w*'\w*est", op): # WTF NILS !!!!!!!!!!!!!!!!!
+            elif re.match(r"C\s*'\s*EST", op): # WTF NILS !!!!!!!!!!!!!!!!!
                 aggregate = aggregate == val
         return aggregate
 
 
     # Visit a parse tree produced by Parser#function_call.
     def visitFunction_call(self, ctx:Parser.Function_callContext):
-        name = str(ctx.ID)
+        name = str(ctx.ID())
         if name not in self.functions:
             errors.error(f"fonction {name} inconnue")
         self.current = name
         vars = VariableScope(self.call_stack[-1][1]) # On duplique 
         self.call_stack.append((name, vars))
         for statement in self.functions[name]:
-            self.visitStatement(statement)
+            ret = self.visitStatement(statement)
+            match ret:
+                case Return(value):
+                    self.call_stack.pop()
+                    return value
+                case Break():
+                    errors.error("Break en dehors d'une boucle")
+                case _:
+                    continue
+
         self.call_stack.pop()
+        return 
 
 
     # Visit a parse tree produced by Parser#print.
@@ -131,14 +143,29 @@ class Visitor(APAGNANGAGEVisitor):
 
     # Visit a parse tree produced by Parser#print_assign_string.
     def visitPrint_assign_string(self, ctx:Parser.Print_assign_stringContext):
-        return self.visitChildren(ctx)
-
+        name = str(ctx.ID())
+        content = ctx.STRING_ASSIGN()
+        content: str = re.findall(r"TU\s*FAIS\s*UN\s*(.*)", str(content))[0]
+        content = content.removesuffix("DANS")
+        content = content.strip()
+        self.call_stack[-1][1].set(name, content)
 
     # Visit a parse tree produced by Parser#loop.
     def visitLoop(self, ctx:Parser.LoopContext):
-        return self.visitChildren(ctx)
-
-
+        idx_name = str(ctx.ID())
+        match ctx.getChild(3):
+            case Parser.Loop_counterContext():
+                count = len(ctx.loop_counter().children)
+            case id:
+                name = str(id)
+                count = self.call_stack[-1][1].get_check(name)
+                if not isinstance(count, int):
+                    errors.error("Le max du compteur doit être de type int (on et pas dans python avec dé sale itérateur)")
+                
+        for i in range(count):
+            self.call_stack[-1][1].set(idx_name, i)
+            self.visitBlock(ctx.block())
+                
     # Visit a parse tree produced by Parser#logic.
     def visitLogic(self, ctx:Parser.LogicContext):
         return self.visitChildren(ctx)
@@ -146,7 +173,9 @@ class Visitor(APAGNANGAGEVisitor):
 
     # Visit a parse tree produced by Parser#if.
     def visitIf(self, ctx:Parser.IfContext):
-        return self.visitChildren(ctx)
+        logic = self.visitExpression(ctx.expression())
+        if logic:
+            return self.visitBlock(ctx.block())
 
 
     # Visit a parse tree produced by Parser#block.
@@ -166,8 +195,8 @@ class Visitor(APAGNANGAGEVisitor):
         name = str(ctx.ID())
         block = ctx.statement()
         self.functions[name] = block
-        
+
 
     # Visit a parse tree produced by Parser#return.
     def visitReturn(self, ctx:Parser.ReturnContext):
-        return self.visitChildren(ctx)
+        return Return(self.visitExpression(ctx.expression()))

@@ -89,6 +89,15 @@ class APAGNANGAGEListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by APAGNANGAGEParser#loop_counter.
+    def enterLoop_counter(self, ctx:APAGNANGAGEParser.Loop_counterContext):
+        pass
+
+    # Exit a parse tree produced by APAGNANGAGEParser#loop_counter.
+    def exitLoop_counter(self, ctx:APAGNANGAGEParser.Loop_counterContext):
+        pass
+
+
     # Enter a parse tree produced by APAGNANGAGEParser#loop.
     def enterLoop(self, ctx:APAGNANGAGEParser.LoopContext):
         pass

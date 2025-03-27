@@ -54,6 +54,11 @@ class APAGNANGAGEVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by APAGNANGAGEParser#loop_counter.
+    def visitLoop_counter(self, ctx:APAGNANGAGEParser.Loop_counterContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by APAGNANGAGEParser#loop.
     def visitLoop(self, ctx:APAGNANGAGEParser.LoopContext):
         return self.visitChildren(ctx)

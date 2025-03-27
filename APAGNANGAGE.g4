@@ -96,19 +96,24 @@ print
     ;
 
 print_assign_string
-    : PRINT ? STRING_ASSIGN ID
+    : PRINT  STRING_ASSIGN ID
+    ;
+
+loop_counter
+    : LOOP_COUNTER +
     ;
 
 loop
-    : LOOP ID? LOOP (ID | LOOP_COUNTER*) block
+    : LOOP ID LOOP (ID | loop_counter) block
     ;
 
 logic
     : expression EQUALS expression
     ;
 
+// Je met plutot une expression qu'une logique 
 if
-    : IF logic block
+    : IF expression block
     ;
 
 block
