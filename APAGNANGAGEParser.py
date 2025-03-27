@@ -15,16 +15,16 @@ def serializedATN():
         2,14,7,14,2,15,7,15,2,16,7,16,1,0,5,0,36,8,0,10,0,12,0,39,9,0,1,
         0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,53,8,1,1,2,1,2,
         1,2,1,2,1,3,1,3,1,4,1,4,1,5,1,5,1,5,1,5,4,5,67,8,5,11,5,12,5,68,
-        1,6,1,6,1,6,1,7,1,7,1,7,3,7,77,8,7,1,8,3,8,80,8,8,1,8,1,8,1,8,1,
-        9,4,9,86,8,9,11,9,12,9,87,1,10,1,10,1,10,1,10,1,10,3,10,95,8,10,
+        1,6,1,6,1,6,1,7,1,7,1,7,3,7,77,8,7,1,8,1,8,1,8,1,8,1,9,4,9,84,8,
+        9,11,9,12,9,85,1,10,1,10,3,10,90,8,10,1,10,1,10,1,10,3,10,95,8,10,
         1,10,1,10,1,11,1,11,1,11,1,11,1,12,1,12,1,12,1,12,1,13,1,13,5,13,
         109,8,13,10,13,12,13,112,9,13,1,13,1,13,3,13,116,8,13,1,14,1,14,
         1,14,1,15,1,15,1,15,5,15,124,8,15,10,15,12,15,127,9,15,1,15,3,15,
         130,8,15,1,15,1,15,1,15,1,16,1,16,3,16,137,8,16,1,16,0,0,17,0,2,
         4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,0,1,1,0,10,14,144,0,37,
         1,0,0,0,2,52,1,0,0,0,4,54,1,0,0,0,6,58,1,0,0,0,8,60,1,0,0,0,10,66,
-        1,0,0,0,12,70,1,0,0,0,14,73,1,0,0,0,16,79,1,0,0,0,18,85,1,0,0,0,
-        20,89,1,0,0,0,22,98,1,0,0,0,24,102,1,0,0,0,26,115,1,0,0,0,28,117,
+        1,0,0,0,12,70,1,0,0,0,14,73,1,0,0,0,16,78,1,0,0,0,18,83,1,0,0,0,
+        20,87,1,0,0,0,22,98,1,0,0,0,24,102,1,0,0,0,26,115,1,0,0,0,28,117,
         1,0,0,0,30,120,1,0,0,0,32,134,1,0,0,0,34,36,3,2,1,0,35,34,1,0,0,
         0,36,39,1,0,0,0,37,35,1,0,0,0,37,38,1,0,0,0,38,40,1,0,0,0,39,37,
         1,0,0,0,40,41,5,0,0,1,41,1,1,0,0,0,42,53,3,4,2,0,43,53,3,12,6,0,
@@ -38,10 +38,10 @@ def serializedATN():
         0,0,0,66,63,1,0,0,0,66,64,1,0,0,0,66,65,1,0,0,0,67,68,1,0,0,0,68,
         66,1,0,0,0,68,69,1,0,0,0,69,11,1,0,0,0,70,71,5,6,0,0,71,72,5,1,0,
         0,72,13,1,0,0,0,73,76,5,3,0,0,74,77,3,10,5,0,75,77,5,20,0,0,76,74,
-        1,0,0,0,76,75,1,0,0,0,77,15,1,0,0,0,78,80,5,3,0,0,79,78,1,0,0,0,
-        79,80,1,0,0,0,80,81,1,0,0,0,81,82,5,19,0,0,82,83,5,1,0,0,83,17,1,
-        0,0,0,84,86,5,16,0,0,85,84,1,0,0,0,86,87,1,0,0,0,87,85,1,0,0,0,87,
-        88,1,0,0,0,88,19,1,0,0,0,89,90,5,15,0,0,90,91,5,1,0,0,91,94,5,15,
+        1,0,0,0,76,75,1,0,0,0,77,15,1,0,0,0,78,79,5,3,0,0,79,80,5,19,0,0,
+        80,81,5,1,0,0,81,17,1,0,0,0,82,84,5,16,0,0,83,82,1,0,0,0,84,85,1,
+        0,0,0,85,83,1,0,0,0,85,86,1,0,0,0,86,19,1,0,0,0,87,89,5,15,0,0,88,
+        90,5,1,0,0,89,88,1,0,0,0,89,90,1,0,0,0,90,91,1,0,0,0,91,94,5,15,
         0,0,92,95,5,1,0,0,93,95,3,18,9,0,94,92,1,0,0,0,94,93,1,0,0,0,95,
         96,1,0,0,0,96,97,3,26,13,0,97,21,1,0,0,0,98,99,3,10,5,0,99,100,5,
         10,0,0,100,101,3,10,5,0,101,23,1,0,0,0,102,103,5,18,0,0,103,104,
@@ -55,7 +55,7 @@ def serializedATN():
         5,9,0,0,129,128,1,0,0,0,129,130,1,0,0,0,130,131,1,0,0,0,131,132,
         5,4,0,0,132,133,5,1,0,0,133,31,1,0,0,0,134,136,5,7,0,0,135,137,3,
         10,5,0,136,135,1,0,0,0,136,137,1,0,0,0,137,33,1,0,0,0,13,37,52,66,
-        68,76,79,87,94,110,115,125,129,136
+        68,76,85,89,94,110,115,125,129,136
     ]
 
 class APAGNANGAGEParser ( Parser ):
@@ -182,7 +182,7 @@ class APAGNANGAGEParser ( Parser ):
             self.state = 37
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 1047790) != 0):
+            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 523502) != 0):
                 self.state = 34
                 self.statement()
                 self.state = 39
@@ -744,14 +744,14 @@ class APAGNANGAGEParser ( Parser ):
             super().__init__(parent, invokingState)
             self.parser = parser
 
+        def PRINT(self):
+            return self.getToken(APAGNANGAGEParser.PRINT, 0)
+
         def STRING_ASSIGN(self):
             return self.getToken(APAGNANGAGEParser.STRING_ASSIGN, 0)
 
         def ID(self):
             return self.getToken(APAGNANGAGEParser.ID, 0)
-
-        def PRINT(self):
-            return self.getToken(APAGNANGAGEParser.PRINT, 0)
 
         def getRuleIndex(self):
             return APAGNANGAGEParser.RULE_print_assign_string
@@ -777,20 +777,13 @@ class APAGNANGAGEParser ( Parser ):
 
         localctx = APAGNANGAGEParser.Print_assign_stringContext(self, self._ctx, self.state)
         self.enterRule(localctx, 16, self.RULE_print_assign_string)
-        self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
+            self.state = 78
+            self.match(APAGNANGAGEParser.PRINT)
             self.state = 79
-            self._errHandler.sync(self)
-            _la = self._input.LA(1)
-            if _la==3:
-                self.state = 78
-                self.match(APAGNANGAGEParser.PRINT)
-
-
-            self.state = 81
             self.match(APAGNANGAGEParser.STRING_ASSIGN)
-            self.state = 82
+            self.state = 80
             self.match(APAGNANGAGEParser.ID)
         except RecognitionException as re:
             localctx.exception = re
@@ -841,13 +834,13 @@ class APAGNANGAGEParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 85 
+            self.state = 83 
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while True:
-                self.state = 84
+                self.state = 82
                 self.match(APAGNANGAGEParser.LOOP_COUNTER)
-                self.state = 87 
+                self.state = 85 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 if not (_la==16):
@@ -875,15 +868,15 @@ class APAGNANGAGEParser ( Parser ):
             else:
                 return self.getToken(APAGNANGAGEParser.LOOP, i)
 
+        def block(self):
+            return self.getTypedRuleContext(APAGNANGAGEParser.BlockContext,0)
+
+
         def ID(self, i:int=None):
             if i is None:
                 return self.getTokens(APAGNANGAGEParser.ID)
             else:
                 return self.getToken(APAGNANGAGEParser.ID, i)
-
-        def block(self):
-            return self.getTypedRuleContext(APAGNANGAGEParser.BlockContext,0)
-
 
         def loop_counter(self):
             return self.getTypedRuleContext(APAGNANGAGEParser.Loop_counterContext,0)
@@ -913,12 +906,19 @@ class APAGNANGAGEParser ( Parser ):
 
         localctx = APAGNANGAGEParser.LoopContext(self, self._ctx, self.state)
         self.enterRule(localctx, 20, self.RULE_loop)
+        self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 89
+            self.state = 87
             self.match(APAGNANGAGEParser.LOOP)
-            self.state = 90
-            self.match(APAGNANGAGEParser.ID)
+            self.state = 89
+            self._errHandler.sync(self)
+            _la = self._input.LA(1)
+            if _la==1:
+                self.state = 88
+                self.match(APAGNANGAGEParser.ID)
+
+
             self.state = 91
             self.match(APAGNANGAGEParser.LOOP)
             self.state = 94
@@ -1122,7 +1122,7 @@ class APAGNANGAGEParser ( Parser ):
                 self.state = 110
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                while (((_la) & ~0x3f) == 0 and ((1 << _la) & 1047790) != 0):
+                while (((_la) & ~0x3f) == 0 and ((1 << _la) & 523502) != 0):
                     self.state = 107
                     self.statement()
                     self.state = 112
@@ -1264,7 +1264,7 @@ class APAGNANGAGEParser ( Parser ):
             self.state = 125
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 1047790) != 0):
+            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 523502) != 0):
                 self.state = 122
                 self.statement()
                 self.state = 127

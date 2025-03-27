@@ -104,7 +104,7 @@ loop_counter
     ;
 
 loop
-    : LOOP ID LOOP (ID | loop_counter) block
+    : LOOP ID? LOOP (ID | loop_counter) block
     ;
 
 logic
