@@ -14,20 +14,27 @@ def convert_int(int_repr: str) -> int:
 
 
 class VariableScope:
-    def __init__(self, **kwargs):
+    def __init__(self, parent, **kwargs):
         self.vars = {**kwargs}
+        self.parent:VariableScope = parent
         
     def varExist(self, varname):
-        return varname in self.vars
+        if varname in self.vars:
+            return True
+        if self.parent and self.parent.varExist(varname):
+            return True
+        return False
     
     def get(self, varname):
         return self.vars[varname]
     
     def get_check(self, varname):
         # vérifie si la variable existe et la renvoie, sinon lance une erreur
-        if varname not in self.vars:
-            errors.error(f"la variable {varname} n'existe pas")
-        return self.get(varname)
+        if varname in self.vars:
+            return self.vars[varname]
+        if self.parent is not None and self.parent.varExist(varname):
+            return self.parent.get(varname)
+        errors.error(f"La variable {varname} n'existe pas")
     
     def set(self, varname, value):
         self.vars[varname] = value
@@ -35,10 +42,17 @@ class VariableScope:
 class Visitor(APAGNANGAGEVisitor):
     def __init__(self):
         super().__init__()
-        self.scopes = {
-            "main" : VariableScope(),
-            "pignouf" : VariableScope(A = 1)}
+        
+        # Le principe est le suivant, chaque corps de fonction
+        # est stockée dans functions (associé au nom de la fonction)
+        
+        # À chaque fois qu'il y a un nouvel appel (de fonction, et tout)
+        # on le rajoute sur la pile d'appel, ainsi que l'instance de la table de variable associée
+        
+        main_var_scope = VariableScope(None)
         self.current = "main"
+        self.call_stack = [("main", main_var_scope)]
+        self.functions = {}
     
     # Visit a parse tree produced by Parser#program.
     def visitProgram(self, ctx:Parser.ProgramContext):
@@ -53,7 +67,7 @@ class Visitor(APAGNANGAGEVisitor):
     def visitAssignment(self, ctx:Parser.AssignmentContext):
         varname = str(ctx.ID())
         value = self.visitExpression(ctx.expression())
-        self.scopes[self.current].set(varname, value)
+        self.call_stack[-1][1].set(varname, value)
 
     # Visit a parse tree produced by Parser#expression.
     def visitExpression(self, ctx:Parser.ExpressionContext):
@@ -70,7 +84,7 @@ class Visitor(APAGNANGAGEVisitor):
                     values.append(convert_int(exp.getText()))
                 case _: # C'est un identifiant
                     varname = str(exp.getText())
-                    val = self.scopes[self.current].get_check(varname)
+                    val = self.call_stack[-1][1].get_check(varname)
                     values.append(val)
                     
         aggregate = values[0]
@@ -99,7 +113,15 @@ class Visitor(APAGNANGAGEVisitor):
 
     # Visit a parse tree produced by Parser#function_call.
     def visitFunction_call(self, ctx:Parser.Function_callContext):
-        return self.visitChildren(ctx)
+        name = str(ctx.ID)
+        if name not in self.functions:
+            errors.error(f"fonction {name} inconnue")
+        self.current = name
+        vars = VariableScope(self.call_stack[-1][1]) # On duplique 
+        self.call_stack.append((name, vars))
+        for statement in self.functions[name]:
+            self.visitStatement(statement)
+        self.call_stack.pop()
 
 
     # Visit a parse tree produced by Parser#print.
@@ -136,11 +158,15 @@ class Visitor(APAGNANGAGEVisitor):
     def visitIncrement(self, ctx:Parser.IncrementContext):
         return self.visitChildren(ctx)
 
-
     # Visit a parse tree produced by Parser#function_def.
     def visitFunction_def(self, ctx:Parser.Function_defContext):
-        return self.visitChildren(ctx)
-
+        # On ne visite pas le corps de la fonction
+        # On se contente de stocker les statements dans 
+        # functions sous le nom de la fonction
+        name = str(ctx.ID())
+        block = ctx.statement()
+        self.functions[name] = block
+        
 
     # Visit a parse tree produced by Parser#return.
     def visitReturn(self, ctx:Parser.ReturnContext):
