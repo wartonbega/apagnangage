@@ -35,21 +35,30 @@ class APAGNANGAGEListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by APAGNANGAGEParser#expression_int.
+    def enterExpression_int(self, ctx:APAGNANGAGEParser.Expression_intContext):
+        pass
+
+    # Exit a parse tree produced by APAGNANGAGEParser#expression_int.
+    def exitExpression_int(self, ctx:APAGNANGAGEParser.Expression_intContext):
+        pass
+
+
+    # Enter a parse tree produced by APAGNANGAGEParser#operator.
+    def enterOperator(self, ctx:APAGNANGAGEParser.OperatorContext):
+        pass
+
+    # Exit a parse tree produced by APAGNANGAGEParser#operator.
+    def exitOperator(self, ctx:APAGNANGAGEParser.OperatorContext):
+        pass
+
+
     # Enter a parse tree produced by APAGNANGAGEParser#expression.
     def enterExpression(self, ctx:APAGNANGAGEParser.ExpressionContext):
         pass
 
     # Exit a parse tree produced by APAGNANGAGEParser#expression.
     def exitExpression(self, ctx:APAGNANGAGEParser.ExpressionContext):
-        pass
-
-
-    # Enter a parse tree produced by APAGNANGAGEParser#math.
-    def enterMath(self, ctx:APAGNANGAGEParser.MathContext):
-        pass
-
-    # Exit a parse tree produced by APAGNANGAGEParser#math.
-    def exitMath(self, ctx:APAGNANGAGEParser.MathContext):
         pass
 
 
@@ -122,6 +131,24 @@ class APAGNANGAGEListener(ParseTreeListener):
 
     # Exit a parse tree produced by APAGNANGAGEParser#increment.
     def exitIncrement(self, ctx:APAGNANGAGEParser.IncrementContext):
+        pass
+
+
+    # Enter a parse tree produced by APAGNANGAGEParser#function_def.
+    def enterFunction_def(self, ctx:APAGNANGAGEParser.Function_defContext):
+        pass
+
+    # Exit a parse tree produced by APAGNANGAGEParser#function_def.
+    def exitFunction_def(self, ctx:APAGNANGAGEParser.Function_defContext):
+        pass
+
+
+    # Enter a parse tree produced by APAGNANGAGEParser#return.
+    def enterReturn(self, ctx:APAGNANGAGEParser.ReturnContext):
+        pass
+
+    # Exit a parse tree produced by APAGNANGAGEParser#return.
+    def exitReturn(self, ctx:APAGNANGAGEParser.ReturnContext):
         pass
 
 

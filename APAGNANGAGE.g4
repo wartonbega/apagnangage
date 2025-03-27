@@ -67,14 +67,22 @@ assignment
     : expression ASSIGN ID
     ;
 
+expression_int
+    : INT
+    ;
+
+operator
+    : PLUS
+    | MINUS
+    | MULTIPLY
+    | DIVIDE
+    | EQUALS
+    ;
+
 expression 
-    : ( PLUS
-      | MINUS
-      | MULTIPLY
-      | DIVIDE
-      | EQUALS
+    : ( operator
       | function_call
-      | INT
+      | expression_int
       | ID
       ) +
     ;

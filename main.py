@@ -4,10 +4,10 @@ import argparse
 
 # Lexer et parser APAGNAN
 from antlr4 import *
-from APAGNANGAGELexer import APAGNANGAGELexer as ALexer
-from APAGNANGAGEParser import APAGNANGAGEParser as AParser
-from APAGNANGAGEListener import APAGNANGAGEListener as AListener
+from APAGNANGAGELexer import APAGNANGAGELexer as Lexer
+from APAGNANGAGEParser import APAGNANGAGEParser as Parser
 
+import visitor
 
 # Des trucs utiles
 import useful as uf
@@ -32,7 +32,11 @@ if __name__ == '__main__':
     #################################################
     # Parsing du/des fichiers d'entrée              #
     #################################################
-    lexer = ALexer(InputStream(input_stream))
-    parser = AParser(CommonTokenStream(lexer))
+    lexer = Lexer(InputStream(input_stream))
+    parser = Parser(CommonTokenStream(lexer))
     parse_tree = parser.program()
-    print(parse_tree.toStringTree(recog=parser))
+    if parser.getNumberOfSyntaxErrors() > 0:
+        print("syntax errors")
+    else:
+        vinterp = visitor.Visitor()
+        vinterp.visit(parse_tree)

@@ -1,7 +1,7 @@
 
 from antlr4 import *
-from APAGNANGAGELexer import APAGNANGAGELexer as ALexer
-from APAGNANGAGEParser import APAGNANGAGEParser as AParser
+from APAGNANGAGELexer import APAGNANGAGELexer as Lexer
+from APAGNANGAGEParser import APAGNANGAGEParser as Parser
 from APAGNANGAGEListener import APAGNANGAGEListener as AListener
 from antlr4.tree import Trees
 
