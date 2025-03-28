@@ -100,11 +100,12 @@ print_assign_string
     ;
 
 loop_counter
-    : LOOP_COUNTER +
+    : LOOP_COUNTER *
+    | ID
     ;
 
 loop
-    : LOOP ID? LOOP (ID | loop_counter) block
+    : LOOP ID? LOOP loop_counter block
     ;
 
 logic
