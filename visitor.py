@@ -9,8 +9,8 @@ import errors
 from special_return import *
 
 
-def convert_int(int_repr: str) -> int:
-    sp = re.split("(P|GN|N)", int_repr)[::2]
+def convert_int(node: TerminalNodeImpl) -> int:
+    sp = re.split("(P|GN|N)", node.getText())[::2]
     n = 0
     for k, slice in enumerate(reversed(sp)):
         n += len(slice) * (10 ** k)
@@ -81,12 +81,12 @@ class Visitor(APAGNANGAGEVisitor):
         for exp in ctx.children:
             match exp:
                 case Parser.OperatorContext():
-                    operators.append(exp.getText())
+                    operators.append(exp.getChild(0).getSymbol())
                 case Parser.Function_callContext():
                     values.append(self.visitFunction_call(exp))
                 case Parser.Expression_intContext():
-                    values.append(convert_int(exp.getText()))
-                case _:  # C'est un identifiant
+                    values.append(convert_int(exp))
+                case TerminalNode():  # C'est un identifiant
                     varname = str(exp.getText())
                     val = self.call_stack[-1][1].get_check(varname)
                     values.append(val)
@@ -100,20 +100,23 @@ class Visitor(APAGNANGAGEVisitor):
             errors.error(
                 f"Il n'y pas assez d'opérateurs ou d'opérandes pour effectuer le calcul : il y a en trop {en_trop}")
 
-        # Pour le moment on se moque de l'ordre des opérations, on traites tous les opérateurs dans l'ordre
-        for i in range(len(operators)):
-            op = operators[i]
+        # Pour le moment on se moque de l'ordre des opérations, on traite tous les opérateurs dans l'ordre
+        for i, op in enumerate(operators):
             val = values[i + 1]
-            if op == '+':
-                aggregate += val
-            elif op == '-':
-                aggregate -= val
-            elif op == '*':
-                aggregate *= val
-            elif op == '/':
-                aggregate /= val
-            elif re.match(r"C\s*'\s*EST", op):  # WTF NILS !!!!!!!!!!!!!!!!!
-                aggregate = aggregate == val
+            match op.type:
+                case APAGNANGAGEParser.PLUS:
+                    aggregate += val
+                case APAGNANGAGEParser.MINUS:
+                    aggregate -= val
+                case APAGNANGAGEParser.MULTIPLY:
+                    aggregate *= val
+                case APAGNANGAGEParser.DIVIDE:
+                    aggregate /= val
+                case APAGNANGAGEParser.EQUALS:
+                    aggregate = aggregate == val
+                case _:
+                    errors.error(f"Opérateur {op.text} non supporté")
+
         return aggregate
 
     # Visit a parse tree produced by Parser#function_call.
