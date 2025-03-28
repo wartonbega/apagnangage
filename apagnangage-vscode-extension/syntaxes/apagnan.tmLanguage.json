@@ -1,0 +1,133 @@
+{
+    "scopeName": "source.apagnan",
+    "name": "apagnan",
+    "patterns": [
+        {
+            "include": "#keywords-control"
+        },
+        {
+            "include": "#keywords-others"
+        },
+        {
+            "include": "#types"
+        },
+        {
+            "include": "#functions"
+        },
+        {
+            "include": "#function-calls"
+        },
+        {
+            "include": "#variables"
+        },
+        {
+            "include": "#variable-definitions"
+        },
+        {
+            "include": "#strings"
+        },
+        {
+            "include": "#comments"
+        },
+        {
+            "include": "#operators"
+        },
+        {
+            "include": "#control-structures"
+        },
+        {
+            "include": "#numbers"
+        },
+        {
+            "include": "#syntax-correction"
+        },
+        {
+            "include": "#special-identifiers"
+        },
+        {
+            "include": "#listed-types"
+        },
+        {
+            "include": "#boolean-values"
+        }
+    ],
+    "repository": {
+        "keywords-control": {
+            "patterns": [
+                {
+                    "match": "\\b((QUOI\\s*FEUR)|GENRE|FAIT|BELECK|GRAND\\s*SABLON)\\b",
+                    "name": "keyword.control.apagnan"
+                }
+            ]
+        },
+        "keywords-others": {
+            "patterns": [
+                {
+                    "match": "\\b(FEUR|OUH)\\b",
+                    "name": "keyword.other.apagnan"
+                }
+            ]
+        },
+        "function-calls": {
+            "patterns": [
+                {
+                    "match": "QUOI\\s*(\\w+)\\s*\\(",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.function-name.apagnan"
+                        }
+                    }
+                }
+            ]
+        },
+        "variables": {
+            "patterns": [
+                {
+                    "match": "\\bDANS\\s*(\\w+)",
+                    "name": "variable.apagnan",
+                    "captures": {
+                        "1": {
+                            "name": "variable.name.apagan"
+                        }
+                    }
+                }
+            ]
+        },
+        "strings": {
+            "patterns": [
+                {
+                    "match": "TU\\s*FAIS\\s*UN\\s*",
+                    "name": "string.apagnan"
+                }
+            ]
+        },
+        "comments": {
+            "patterns": [
+                {
+                    "match": "CRARI.*$",
+                    "name": "comment.line.apagnan"
+                }
+            ]
+        },
+        "operators": {
+            "patterns": [
+                {
+                    "match": "[+-/*]|(C\\w*'\\w*EST)",
+                    "name": "keyword.operator.apagnan"
+                }
+            ]
+        },
+        "numbers": {
+            "patterns": [
+                {
+                    "match": "\\b0[xX][0-9a-fA-F]+\\b",
+                    "name": "constant.numeric.hex.apagnan"
+                },
+                {
+                    "match": "\\b\\d+\\b",
+                    "name": "constant.numeric.decimal.apagnan"
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "name": "apagnangage",
+    "displayName": "APAGNANGAGE",
+    "description": "",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.70.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "apagnangage",
+            "aliases": [],
+            "extensions": [".apagnan"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "apagnangage",
+            "scopeName": "source.apagan",
+            "path": "./syntaxes/apagnan.tmLanguage.json"
+        }]
+    }
+}
