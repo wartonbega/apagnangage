@@ -3,8 +3,15 @@ import random
 
 def rot13(s):
     chars = "abcdefghijklmnopqrstuvwxyz"
+    majs = chars.capitalize() 
     trans = chars[13:]+chars[:13]
-    rot_char = lambda c: trans[chars.find(c)] if chars.find(c)>-1 else c
+    transmaj = majs[13:]+majs[:13]
+    def rot_char(c):
+        if chars.find(c) >- 1:
+            return trans[chars.find(c)]
+        elif majs.find(c) >- 1:
+            return transmaj[majs.find(c)]
+        return c
     return ''.join( rot_char(c) for c in s ) 
 
 class OutputStream:

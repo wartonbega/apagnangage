@@ -67,6 +67,8 @@ class Visitor(APAGNANGAGEVisitor):
 
     # Visit a parse tree produced by Parser#statement.
     def visitStatement(self, ctx:Parser.StatementContext):
+        if ctx.BREAK():
+            return Break()
         return self.visitChildren(ctx)
     
 
