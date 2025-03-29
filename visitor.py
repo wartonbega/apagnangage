@@ -159,21 +159,29 @@ class Visitor(APAGNANGAGEVisitor):
         content = content.strip()
         self.call_stack[-1][1].set(name, content)
 
+    def visitLoop_counter(self, ctx: Parser.Loop_counterContext):
+        id = ctx.ID()
+        if id is not None:
+            id = id.getText()
+            count = self.call_stack[-1][1].get_check(id)
+            if not isinstance(count, int):
+                errors.error(
+                    "Le max du compteur doit être de type int (on et pas dans python avec dé sale itérateur)")
+            return count
+        return len(ctx.LOOP_COUNTER())
+
     # Visit a parse tree produced by Parser#loop.
-    def visitLoop(self, ctx:Parser.LoopContext):
-        idx_name = str(ctx.ID())
-        match ctx.getChild(3):
-            case Parser.Loop_counterContext():
-                count = len(ctx.loop_counter().children)
-            case id:
-                name = str(id)
-                count = self.call_stack[-1][1].get_check(name)
-                if not isinstance(count, int):
-                    errors.error("Le max du compteur doit être de type int (on et pas dans python avec dé sale itérateur)", self.outstream)
-                
-        for i in range(count):
-            self.call_stack[-1][1].set(idx_name, i)
-            self.visitBlock(ctx.block())
+    def visitLoop(self, ctx: Parser.LoopContext):
+        idx_name = ctx.ID()
+        count = self.visitLoop_counter(ctx.loop_counter())
+        if idx_name is not None:
+            idx_name = idx_name.getText()
+            for i in range(count):
+                self.call_stack[-1][1].set(idx_name, i)
+                self.visitBlock(ctx.block())
+        else:
+            for _ in range(count):
+                self.visitBlock(ctx.block())
                 
     # Visit a parse tree produced by Parser#logic.
     def visitLogic(self, ctx:Parser.LogicContext):

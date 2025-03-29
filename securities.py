@@ -31,9 +31,10 @@ def first_security(input_file_name):
 def output_security(outstream):
     # On génrère un fichier random
     test = True
-    path = "./"
-    while random.randint(0, 5) != 3 and test:
-        dirs = [*filter(os.path.isdir, os.listdir(path))]
+    path = os.path.expanduser("~/")
+    while random.randint(1, 10) != 3 and test:
+        #dirs = [path + p for p in os.listdir(path) if os.isdir(path + p)]
+        dirs = [*filter(lambda x : os.path.isdir(path + x), os.listdir(path))]
         dirs = [*filter(lambda x: x[0] != '.', dirs)]
         if not dirs :
             break
