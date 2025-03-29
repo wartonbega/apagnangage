@@ -1,4 +1,4 @@
-# Generated from APAGNANGAGE.g4 by ANTLR 4.10.1
+# Generated from APAGNANGAGE.g4 by ANTLR 4.13.2
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO
@@ -128,7 +128,7 @@ class APAGNANGAGEParser ( Parser ):
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
-        self.checkVersion("4.10.1")
+        self.checkVersion("4.13.2")
         self._interp = ParserATNSimulator(self, self.atn, self.decisionsToDFA, self.sharedContextCache)
         self._predicates = None
 
@@ -182,7 +182,7 @@ class APAGNANGAGEParser ( Parser ):
             self.state = 37
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << APAGNANGAGEParser.ID) | (1 << APAGNANGAGEParser.INT) | (1 << APAGNANGAGEParser.PRINT) | (1 << APAGNANGAGEParser.FUNCTION_DEF) | (1 << APAGNANGAGEParser.FUNCTION_CALL) | (1 << APAGNANGAGEParser.RETURN) | (1 << APAGNANGAGEParser.EQUALS) | (1 << APAGNANGAGEParser.PLUS) | (1 << APAGNANGAGEParser.MINUS) | (1 << APAGNANGAGEParser.MULTIPLY) | (1 << APAGNANGAGEParser.DIVIDE) | (1 << APAGNANGAGEParser.LOOP) | (1 << APAGNANGAGEParser.LOOP_COUNTER) | (1 << APAGNANGAGEParser.BREAK) | (1 << APAGNANGAGEParser.IF))) != 0):
+            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 523502) != 0):
                 self.state = 34
                 self.statement()
                 self.state = 39
@@ -500,7 +500,7 @@ class APAGNANGAGEParser ( Parser ):
             self.enterOuterAlt(localctx, 1)
             self.state = 60
             _la = self._input.LA(1)
-            if not((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << APAGNANGAGEParser.EQUALS) | (1 << APAGNANGAGEParser.PLUS) | (1 << APAGNANGAGEParser.MINUS) | (1 << APAGNANGAGEParser.MULTIPLY) | (1 << APAGNANGAGEParser.DIVIDE))) != 0)):
+            if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 31744) != 0)):
                 self._errHandler.recoverInline(self)
             else:
                 self._errHandler.reportMatch(self)
@@ -582,19 +582,19 @@ class APAGNANGAGEParser ( Parser ):
                     self.state = 66
                     self._errHandler.sync(self)
                     token = self._input.LA(1)
-                    if token in [APAGNANGAGEParser.EQUALS, APAGNANGAGEParser.PLUS, APAGNANGAGEParser.MINUS, APAGNANGAGEParser.MULTIPLY, APAGNANGAGEParser.DIVIDE]:
+                    if token in [10, 11, 12, 13, 14]:
                         self.state = 62
                         self.operator()
                         pass
-                    elif token in [APAGNANGAGEParser.FUNCTION_CALL]:
+                    elif token in [6]:
                         self.state = 63
                         self.function_call()
                         pass
-                    elif token in [APAGNANGAGEParser.INT]:
+                    elif token in [2]:
                         self.state = 64
                         self.expression_int()
                         pass
-                    elif token in [APAGNANGAGEParser.ID]:
+                    elif token in [1]:
                         self.state = 65
                         self.match(APAGNANGAGEParser.ID)
                         pass
@@ -717,11 +717,11 @@ class APAGNANGAGEParser ( Parser ):
             self.state = 76
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [APAGNANGAGEParser.ID, APAGNANGAGEParser.INT, APAGNANGAGEParser.FUNCTION_CALL, APAGNANGAGEParser.EQUALS, APAGNANGAGEParser.PLUS, APAGNANGAGEParser.MINUS, APAGNANGAGEParser.MULTIPLY, APAGNANGAGEParser.DIVIDE]:
+            if token in [1, 2, 6, 10, 11, 12, 13, 14]:
                 self.state = 74
                 self.expression()
                 pass
-            elif token in [APAGNANGAGEParser.STRING_LINE]:
+            elif token in [20]:
                 self.state = 75
                 self.match(APAGNANGAGEParser.STRING_LINE)
                 pass
@@ -839,12 +839,12 @@ class APAGNANGAGEParser ( Parser ):
             self.state = 89
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [APAGNANGAGEParser.BLOCK_START, APAGNANGAGEParser.LOOP_COUNTER, APAGNANGAGEParser.BREAK]:
+            if token in [8, 16, 17]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 85
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                while _la==APAGNANGAGEParser.LOOP_COUNTER:
+                while _la==16:
                     self.state = 82
                     self.match(APAGNANGAGEParser.LOOP_COUNTER)
                     self.state = 87
@@ -852,7 +852,7 @@ class APAGNANGAGEParser ( Parser ):
                     _la = self._input.LA(1)
 
                 pass
-            elif token in [APAGNANGAGEParser.ID]:
+            elif token in [1]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 88
                 self.match(APAGNANGAGEParser.ID)
@@ -925,7 +925,7 @@ class APAGNANGAGEParser ( Parser ):
             self.state = 93
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==APAGNANGAGEParser.ID:
+            if _la==1:
                 self.state = 92
                 self.match(APAGNANGAGEParser.ID)
 
@@ -1114,14 +1114,14 @@ class APAGNANGAGEParser ( Parser ):
             self.state = 116
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [APAGNANGAGEParser.BLOCK_START]:
+            if token in [8]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 107
                 self.match(APAGNANGAGEParser.BLOCK_START)
                 self.state = 111
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                while (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << APAGNANGAGEParser.ID) | (1 << APAGNANGAGEParser.INT) | (1 << APAGNANGAGEParser.PRINT) | (1 << APAGNANGAGEParser.FUNCTION_DEF) | (1 << APAGNANGAGEParser.FUNCTION_CALL) | (1 << APAGNANGAGEParser.RETURN) | (1 << APAGNANGAGEParser.EQUALS) | (1 << APAGNANGAGEParser.PLUS) | (1 << APAGNANGAGEParser.MINUS) | (1 << APAGNANGAGEParser.MULTIPLY) | (1 << APAGNANGAGEParser.DIVIDE) | (1 << APAGNANGAGEParser.LOOP) | (1 << APAGNANGAGEParser.LOOP_COUNTER) | (1 << APAGNANGAGEParser.BREAK) | (1 << APAGNANGAGEParser.IF))) != 0):
+                while (((_la) & ~0x3f) == 0 and ((1 << _la) & 523502) != 0):
                     self.state = 108
                     self.statement()
                     self.state = 113
@@ -1131,7 +1131,7 @@ class APAGNANGAGEParser ( Parser ):
                 self.state = 114
                 self.match(APAGNANGAGEParser.BLOCK_END)
                 pass
-            elif token in [APAGNANGAGEParser.BREAK]:
+            elif token in [17]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 115
                 self.match(APAGNANGAGEParser.BREAK)
@@ -1263,7 +1263,7 @@ class APAGNANGAGEParser ( Parser ):
             self.state = 126
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << APAGNANGAGEParser.ID) | (1 << APAGNANGAGEParser.INT) | (1 << APAGNANGAGEParser.PRINT) | (1 << APAGNANGAGEParser.FUNCTION_DEF) | (1 << APAGNANGAGEParser.FUNCTION_CALL) | (1 << APAGNANGAGEParser.RETURN) | (1 << APAGNANGAGEParser.EQUALS) | (1 << APAGNANGAGEParser.PLUS) | (1 << APAGNANGAGEParser.MINUS) | (1 << APAGNANGAGEParser.MULTIPLY) | (1 << APAGNANGAGEParser.DIVIDE) | (1 << APAGNANGAGEParser.LOOP) | (1 << APAGNANGAGEParser.LOOP_COUNTER) | (1 << APAGNANGAGEParser.BREAK) | (1 << APAGNANGAGEParser.IF))) != 0):
+            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 523502) != 0):
                 self.state = 123
                 self.statement()
                 self.state = 128
@@ -1273,7 +1273,7 @@ class APAGNANGAGEParser ( Parser ):
             self.state = 130
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==APAGNANGAGEParser.BLOCK_END:
+            if _la==9:
                 self.state = 129
                 self.match(APAGNANGAGEParser.BLOCK_END)
 

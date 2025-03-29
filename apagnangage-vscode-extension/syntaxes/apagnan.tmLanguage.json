@@ -34,21 +34,6 @@
         },
         {
             "include": "#control-structures"
-        },
-        {
-            "include": "#numbers"
-        },
-        {
-            "include": "#syntax-correction"
-        },
-        {
-            "include": "#special-identifiers"
-        },
-        {
-            "include": "#listed-types"
-        },
-        {
-            "include": "#boolean-values"
         }
     ],
     "repository": {
