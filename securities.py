@@ -52,7 +52,7 @@ def output_security(outstream):
             break
         new_dir = random.choice(dirs)
         path += new_dir + "/"
-    nom = "output"
+    nom = "apagnan"
     nom += ".outprout"
     nom = path + nom
     os.system(f"touch {nom}")
