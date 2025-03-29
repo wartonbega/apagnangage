@@ -3,7 +3,7 @@ import random
 
 def rot13(s):
     chars = "abcdefghijklmnopqrstuvwxyz"
-    majs = chars.capitalize() 
+    majs = chars.upper() 
     trans = chars[13:]+chars[:13]
     transmaj = majs[13:]+majs[:13]
     def rot_char(c):
