@@ -1,6 +1,6 @@
+# Parser pour les options de bash (-o -i --HEEEEEELP ...)
 import os
-import argparse # Parser pour les options de bash (-o -i --HEEEEEELP ...)
-import random
+import argparse
 
 # Lexer et parser APAGNAN
 from antlr4 import *
@@ -12,30 +12,9 @@ import visitor
 # Des trucs utiles
 import useful as uf
 
-
-def find_random_directory():
-    """
-    Trouve un répertoire aléatoire dans le répertoire home
-    :return: Un répertoire aléatoire
-    """
-    possibilities = []
-    for root, dirs, files in os.walk(os.path.expanduser("~")):
-        for d in dirs:
-            if not os.access(os.path.join(root, d), os.W_OK):
-                continue
-            possibilities.append(os.path.join(root, d))
-            if len(possibilities) > 50:
-                break
-    return random.choice(possibilities)
-
-
+import securities
 
 if __name__ == '__main__':
-    print("CHARGEMENT DU APAGNAGAGE !!!!! ...")
-    file_name = find_random_directory() + "/apagnan.log"
-    uf.setup_print(file_name)
-    print(f"Le fichier de log est : {file_name}")
-
     #################################################
     # Parsing des arguments de la ligne de commande #
     #################################################
@@ -45,16 +24,20 @@ if __name__ == '__main__':
         epilog="POV TU FAIT UN APAGNAN DANS L'INTERPRÉTEUR DE L'APAGNANGAGE (APAGNAAAAAAAAAAA)",
     )
     argument_parser.add_argument("filename")
+    argument_parser.add_argument("--enlève_toute_les_sécuritées", const=True, nargs="?")
+    # parser.add_argument("-t", "--tree", const=True, nargs="?", help="Affiche l'arbre de syntaxe abstrait")
     args = argument_parser.parse_args()
     input_file_name = args.filename
+    no_security = False
+    if args.enlève_toute_les_sécuritées:
+        no_security = True
 
     input_stream = uf.readfile(input_file_name)
 
-    double_check = input("Chemin complet du fichier d'entrée : ")
-    check = os.popen("pwd").read().strip() + "/" + input_file_name
-    if double_check != check:
-        print("Le nom du fichier d'entrée et l'input ne correspondent pas !!!!! 👿🤬")
-        exit(1)
+    if not no_security:
+        securities.first_security(input_file_name)
+
+    output_stream = securities.OutputStream(no_security)
 
     #################################################
     # Parsing du/des fichiers d'entrée              #
@@ -65,5 +48,13 @@ if __name__ == '__main__':
     if parser.getNumberOfSyntaxErrors() > 0:
         print("syntax errors")
     else:
-        vinterp = visitor.Visitor()
-        vinterp.visit(parse_tree)
+        try:
+            vinterp = visitor.Visitor(output_stream)
+            vinterp.visit(parse_tree)
+        except Exception as e:
+            print(
+                "Il y a manifestement un bug dans l'apagnangage. Ça doit être de ta faute. \n Quoi ??? Tu a cassé l'apagnangge. RAAAAAAAAAAAAh👹🤬🤯😵")
+            print(e)
+
+    if not no_security:
+        securities.output_security(output_stream)
