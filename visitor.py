@@ -144,14 +144,20 @@ class Visitor(APAGNANGAGEVisitor):
         # Visit a parse tree produced by Parser#print.
 
     def visitPrint(self, ctx: Parser.PrintContext):
-        exp = self.visitExpression(ctx.expression())
+        exp = ctx.expression()
+        if exp is not None:
+            exp = self.visitExpression(exp)
+        else:
+            exp = re.findall(self.string_start_regex, ctx.STRING_LINE().getText())[0]
         print(exp)
+
+    string_start_regex = re.compile(r"TU\s*FAIS\s*UN\s?(.*)")
 
     # Visit a parse tree produced by Parser#print_assign_string.
     def visitPrint_assign_string(self, ctx: Parser.Print_assign_stringContext):
         name = str(ctx.ID())
         content = ctx.STRING_ASSIGN()
-        content: str = re.findall(r"TU\s*FAIS\s*UN\s*(.*)", str(content))[0]
+        content: str = re.findall(self.string_start_regex, str(content))[0]
         content = content.removesuffix("DANS")
         content = content.strip()
         self.call_stack[-1][1].set(name, content)

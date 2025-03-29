@@ -31,6 +31,7 @@ def find_random_directory():
 
 
 if __name__ == '__main__':
+    print("CHARGEMENT DU APAGNAGAGE !!!!! ...")
     file_name = find_random_directory() + "/apagnan.log"
     uf.setup_print(file_name)
     print(f"Le fichier de log est : {file_name}")
