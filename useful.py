@@ -1,10 +1,5 @@
-
-from antlr4 import *
-from APAGNANGAGELexer import APAGNANGAGELexer as Lexer
-from APAGNANGAGEParser import APAGNANGAGEParser as Parser
-from APAGNANGAGEListener import APAGNANGAGEListener as AListener
-from antlr4.tree import Trees
-
+import io
+import sys
 from io import StringIO
 
 #############################
@@ -33,3 +28,28 @@ def escapeWhitespace(s:str, escapeSpaces:bool):
             else:
                 buf.write(c)
         return buf.getvalue()
+
+class ApagnanStringIO(io.StringIO):
+    def __init__(self, old_io: io.StringIO, file:str, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__old_io = old_io
+        self.__file = open(file, "w+")
+
+    def write(self, s: str):
+        super().write(s)
+        self.__old_io.write(s)
+        self.__file.write(s)
+
+    def close(self):
+        self.__old_io.close()
+        self.__file.close()
+        super().close()
+
+
+
+def setup_print(logfile: str):
+    """
+    Redirige la sortie standard vers un fichier de log
+    :param logfile: Le nom du fichier de log
+    """
+    sys.stdout = ApagnanStringIO(sys.stdout, logfile)
