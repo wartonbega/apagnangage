@@ -1,6 +1,7 @@
 # Parser pour les options de bash (-o -i --HEEEEEELP ...)
 import os
 import argparse
+import traceback
 
 # Lexer et parser APAGNAN
 from antlr4 import *
@@ -54,7 +55,7 @@ if __name__ == '__main__':
         except Exception as e:
             print(
                 "Il y a manifestement un bug dans l'apagnangage. Ça doit être de ta faute. \n Quoi ??? Tu a cassé l'apagnangge. RAAAAAAAAAAAAh👹🤬🤯😵")
-            print(e)
+            traceback.print_exc()
 
     if not no_security:
         securities.output_security(output_stream)

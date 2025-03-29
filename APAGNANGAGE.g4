@@ -9,6 +9,8 @@ INT: 'A'+ | ('AA' | DECIMAL_SEPARATOR) ('A'* DECIMAL_SEPARATOR)*; // using decim
 
 PRINT: 'POV';
 
+fragment WS: [ \t\r\n];
+
 ASSIGN: 'DANS';
 
 FUNCTION_DEF: 'QUOI' WS* 'FEUR';
@@ -17,8 +19,6 @@ RETURN: 'FEUR';
 
 BLOCK_START: 'FAIT';
 BLOCK_END: 'BELECK';
-
-fragment WS: [ \t\r\n];
 
 EQUALS: 'C' WS* '\'' WS* 'EST';
 
@@ -34,10 +34,12 @@ BREAK: 'FF';
 IF: 'GENRE';
 
 fragment STRING_START: 'TU' WS* 'FAIS' WS* 'UN' WS?;
-fragment STRING_CONTENT: (.*?);
+
+fragment INPUT: 'EH' WS* '!';
 
 STRING_ASSIGN: STRING_START (.*?) WS? ASSIGN;
 STRING_LINE: STRING_START ((~[D\n] | 'D' ~'A' | 'DA' ~'N' | 'DAN' ~'S')*); // no 'DANS' allowed in string
+STRING_INPUT: INPUT (.*?) WS? ASSIGN;
 
 COMMENT: 'CRARI' (~'\n')* -> skip;
 
@@ -56,6 +58,7 @@ statement
     | function_def
     | print
     | print_assign_string
+    | input_assign_string
     | loop
     | if
     | BREAK
@@ -97,6 +100,10 @@ print
 
 print_assign_string
     : PRINT  STRING_ASSIGN ID
+    ;
+
+input_assign_string
+    : STRING_INPUT ID
     ;
 
 loop_counter

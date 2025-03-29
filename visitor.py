@@ -157,17 +157,24 @@ class Visitor(APAGNANGAGEVisitor):
         if exp is not None:
             exp = self.visitExpression(exp)
         else:
-            exp = re.findall(self.string_start_regex, ctx.STRING_LINE().getText())[0]
+            exp = re.match(r"^TU\s*FAIS\s*UN\s?(.*)$", ctx.STRING_LINE().getText())[1]
         self.outstream.write(exp)
-
-    string_start_regex = re.compile(r"TU\s*FAIS\s*UN\s?(.*)(?:\s?DANS)?")
 
     # Visit a parse tree produced by Parser#print_assign_string.
     def visitPrint_assign_string(self, ctx: Parser.Print_assign_stringContext):
         name = str(ctx.ID())
         content = ctx.STRING_ASSIGN()
-        content: str = re.findall(self.string_start_regex, str(content))[0]
+        content: str = re.match(r"^TU\s*FAIS\s*UN\s?(.*?)\s?DANS$", str(content))[1]
         self.call_stack[-1][1].set(name, content)
+   
+
+    def visitInput_assign_string(self, ctx: Parser.Input_assign_stringContext):
+        name = str(ctx.ID())
+        content = ctx.STRING_INPUT()
+        content: str = re.match(r"^EH\s*!(.*?)\s?DANS$", str(content))[1]
+        res = input(content)
+        self.outstream.write(f"{content}{res}")
+        self.call_stack[-1][1].set(name, res)
 
     def visitLoop_counter(self, ctx: Parser.Loop_counterContext):
         id = ctx.ID()
