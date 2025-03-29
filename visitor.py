@@ -4,6 +4,7 @@ from APAGNANGAGEParser import APAGNANGAGEParser as Parser
 from APAGNANGAGEVisitor import APAGNANGAGEVisitor
 
 import errors
+import securities
 from special_return import *
 
 def convert_int(int_repr: str) -> int:
@@ -35,13 +36,13 @@ class VariableScope:
             return self.vars[varname]
         if self.parent is not None and self.parent.varExist(varname):
             return self.parent.get(varname)
-        errors.error(f"La variable {varname} n'existe pas")
+        errors.error(f"La variable {varname} n'existe pas", self.outstream)
     
     def set(self, varname, value):
         self.vars[varname] = value
 
 class Visitor(APAGNANGAGEVisitor):
-    def __init__(self):
+    def __init__(self, outstream: securities.OutputStream):
         super().__init__()
         
         # Le principe est le suivant, chaque corps de fonction
@@ -54,6 +55,9 @@ class Visitor(APAGNANGAGEVisitor):
         self.current = "main"
         self.call_stack = [("main", main_var_scope)]
         self.functions: dict[str, Parser.StatementContext] = {}
+        
+        # Un stream de caractère de sortie
+        self.outstream = outstream
     
     # Visit a parse tree produced by Parser#program.
     def visitProgram(self, ctx:Parser.ProgramContext):
@@ -94,7 +98,7 @@ class Visitor(APAGNANGAGEVisitor):
         # Une petite erreur bien explicite pour dire qu'il faut n opérateurs et n+1 opérandes
         if len(operators) != len(values) - 1:
             en_trop = values[len(operators) : -1] if len(operators) < len(values) - 1 else operators[len(values) - 1: -1]
-            errors.error(f"Il n'y pas assez d'opérateurs ou d'opérandes pour effectuer le calcul : il y a en trop {en_trop}")
+            errors.error(f"Il n'y pas assez d'opérateurs ou d'opérandes pour effectuer le calcul : il y a en trop {en_trop}", self.outstream)
         
         # Pour le moment on se moque de l'ordre des opérations, on traites tous les opérateurs dans l'ordre
         for i in range(len(operators)):
@@ -117,7 +121,7 @@ class Visitor(APAGNANGAGEVisitor):
     def visitFunction_call(self, ctx:Parser.Function_callContext):
         name = str(ctx.ID())
         if name not in self.functions:
-            errors.error(f"fonction {name} inconnue")
+            errors.error(f"fonction {name} inconnue", self.outstream)
         self.current = name
         vars = VariableScope(self.call_stack[-1][1]) # On duplique 
         self.call_stack.append((name, vars))
@@ -128,7 +132,7 @@ class Visitor(APAGNANGAGEVisitor):
                     self.call_stack.pop()
                     return value
                 case Break():
-                    errors.error("Break en dehors d'une boucle")
+                    errors.error("Break en dehors d'une boucle", self.outstream)
                 case _:
                     continue
 
@@ -139,7 +143,7 @@ class Visitor(APAGNANGAGEVisitor):
     # Visit a parse tree produced by Parser#print.
     def visitPrint(self, ctx:Parser.PrintContext):
         exp = self.visitExpression(ctx.expression())
-        print(exp)
+        self.outstream.write(exp)
 
     # Visit a parse tree produced by Parser#print_assign_string.
     def visitPrint_assign_string(self, ctx:Parser.Print_assign_stringContext):
@@ -160,7 +164,7 @@ class Visitor(APAGNANGAGEVisitor):
                 name = str(id)
                 count = self.call_stack[-1][1].get_check(name)
                 if not isinstance(count, int):
-                    errors.error("Le max du compteur doit être de type int (on et pas dans python avec dé sale itérateur)")
+                    errors.error("Le max du compteur doit être de type int (on et pas dans python avec dé sale itérateur)", self.outstream)
                 
         for i in range(count):
             self.call_stack[-1][1].set(idx_name, i)
