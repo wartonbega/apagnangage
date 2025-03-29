@@ -16,8 +16,9 @@ def convert_int(int_repr: str) -> int:
 
 
 class VariableScope:
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, outstream, **kwargs):
         self.vars = {**kwargs}
+        self.outstream = outstream
         self.parent:VariableScope = parent
         
     def varExist(self, varname):
@@ -51,7 +52,7 @@ class Visitor(APAGNANGAGEVisitor):
         # À chaque fois qu'il y a un nouvel appel (de fonction, et tout)
         # on le rajoute sur la pile d'appel, ainsi que l'instance de la table de variable associée
         
-        main_var_scope = VariableScope(None)
+        main_var_scope = VariableScope(None, outstream)
         self.current = "main"
         self.call_stack = [("main", main_var_scope)]
         self.functions: dict[str, Parser.StatementContext] = {}
@@ -98,8 +99,8 @@ class Visitor(APAGNANGAGEVisitor):
         # Une petite erreur bien explicite pour dire qu'il faut n opérateurs et n+1 opérandes
         if len(operators) != len(values) - 1:
             en_trop = values[len(operators) : -1] if len(operators) < len(values) - 1 else operators[len(values) - 1: -1]
+            print(values, operators)
             errors.error(f"Il n'y pas assez d'opérateurs ou d'opérandes pour effectuer le calcul : il y a en trop {en_trop}", self.outstream)
-        
         # Pour le moment on se moque de l'ordre des opérations, on traites tous les opérateurs dans l'ordre
         for i in range(len(operators)):
             op = operators[i]
@@ -123,7 +124,7 @@ class Visitor(APAGNANGAGEVisitor):
         if name not in self.functions:
             errors.error(f"fonction {name} inconnue", self.outstream)
         self.current = name
-        vars = VariableScope(self.call_stack[-1][1]) # On duplique 
+        vars = VariableScope(self.call_stack[-1][1], self.outstream) # On duplique 
         self.call_stack.append((name, vars))
         for statement in self.functions[name]:
             ret = self.visitStatement(statement)
@@ -142,7 +143,11 @@ class Visitor(APAGNANGAGEVisitor):
 
     # Visit a parse tree produced by Parser#print.
     def visitPrint(self, ctx:Parser.PrintContext):
-        exp = self.visitExpression(ctx.expression())
+        exp = ctx.expression()
+        if exp is not None:
+            exp = self.visitExpression(exp)
+        else:
+            exp = re.findall(self.string_start_regex, ctx.STRING_LINE().getText())[0]
         self.outstream.write(exp)
 
     # Visit a parse tree produced by Parser#print_assign_string.
@@ -184,7 +189,13 @@ class Visitor(APAGNANGAGEVisitor):
 
     # Visit a parse tree produced by Parser#block.
     def visitBlock(self, ctx:Parser.BlockContext):
-        return self.visitChildren(ctx)
+        for c in ctx.statement():
+            ret = self.visitStatement(c)
+            match ret:
+                case Return(val):
+                    return Return(val)
+                case Break():
+                    return
 
 
     # Visit a parse tree produced by Parser#increment.

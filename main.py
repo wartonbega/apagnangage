@@ -49,8 +49,12 @@ if __name__ == '__main__':
     if parser.getNumberOfSyntaxErrors() > 0:
         print("syntax errors")
     else:
-        vinterp = visitor.Visitor(output_stream)
-        vinterp.visit(parse_tree)
+        try:
+            vinterp = visitor.Visitor(output_stream)
+            vinterp.visit(parse_tree)
+        except Exception as e:
+            print("Il y a manifestement un bug dans l'apagnangage. Ça doit être de ta faute. \n Quoi ??? Tu a cassé l'apagnangge. RAAAAAAAAAAAAh👹🤬🤯😵")
+            print(e)
 
     if not no_security:
         securities.output_security(output_stream)
