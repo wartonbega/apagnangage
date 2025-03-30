@@ -149,7 +149,7 @@ BELECK DANS APAPAN
 
 **Important: les fonctions n'ont pas de paramètres.** On utilisera donc la convention d'appel suivante:
 
-Pour une fonction nommée X, les paramètres seront nommées `XAP`, `XAGN`, `XAN`, `XAPAN`, etc.
+Pour une fonction nommée _nom_fonction_, les paramètres seront nommées `nom_fonctionAP`, `nom_fonctionAGN`, `nom_fonctionAN`, `nom_fonctionAPAN`, etc.
 
 ### Appels de fonction
 `QUOI` nom de la fonction:
