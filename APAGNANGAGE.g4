@@ -60,7 +60,7 @@ statement
     | function_call
     | function_def
     | print
-    | print_assign_string
+    | assign_string
     | input_assign_string
     | loop
     | if
@@ -100,12 +100,12 @@ function_call
     : FUNCTION_CALL ID
     ;
 
-print
-    : PRINT (expression | STRING_LINE)
+assign_string
+    : STRING_ASSIGN ID
     ;
 
-print_assign_string
-    : PRINT  STRING_ASSIGN ID
+print
+    : PRINT (expression | STRING_LINE | assign_string)
     ;
 
 input_assign_string
