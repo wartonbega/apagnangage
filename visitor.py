@@ -249,7 +249,7 @@ class Visitor(APAGNANGAGEVisitor):
 
     def visitIncrement(self, ctx: APAGNANGAGEParser.IncrementContext):
         varname = ctx.ID().getText()
-        val = self.call_stack[-1][1].get_check(varname, ctx) + 1
+        val = self.call_stack[-1][1].get_check(varname, ctx) + len(ctx.LOOP_COUNTER())
         self.call_stack[-1][1].set(varname, val)
         return val
 

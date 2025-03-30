@@ -48,7 +48,7 @@ STRING_INPUT: INPUT CHARS*? ' '? ASSIGN;
 
 LIST: 'OB';
 LIST_POP: 'SG';
-LIST_INDEX: 'LE' | 'LA';
+LIST_INDEX: 'LE' | 'LA' | 'L\'';
 
 COMMENT: 'CRARI' (~'\n')* -> skip;
 
@@ -140,7 +140,7 @@ block
     ;
 
 increment
-    : LOOP_COUNTER ID
+    : LOOP_COUNTER+ ID
     ;
 
 function_def
