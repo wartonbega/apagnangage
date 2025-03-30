@@ -202,3 +202,9 @@ La définition du langage est dans [APAGNANGAGE.g4](./APAGNANGAGE.g4)
 sudo apt install antlr4 # version 4.13.2
 antlr4 -Dlanguage=Python3 APAGNANGAGE.g4 -visitor -no-listener
 ```
+
+En [téléchargeant le jar d'antlr4](https://www.antlr.org/download/antlr-4.13.2-complete.jar)
+(notamment pour les utilisateurs de Windows):
+```bash
+java -cp "Chemin/vers/antlr-4.13.2-complete.jar" org.antlr.v4.Tool -Dlanguage=Python3 APAGNANGAGE.g4 -visitor -no-listener
+```
