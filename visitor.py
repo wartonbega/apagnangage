@@ -91,7 +91,14 @@ class Visitor(APAGNANGAGEVisitor):
             return content, varname
 
     def visitExpression_int(self, ctx: Parser.Expression_intContext):
-        return len(ctx.INT().getText())
+        text = ctx.getText()
+        if text == "RIEN":
+            return 0
+        sp = re.split("(P|GN|N)", text)[::2]
+        n = 0
+        for k, slice in enumerate(reversed(sp)):
+            n += len(slice) * (10 ** k)
+        return n
 
     # Visit a parse tree produced by Parser#expression.
     def visitExpression(self, ctx: Parser.ExpressionContext):
@@ -301,10 +308,17 @@ class Visitor(APAGNANGAGEVisitor):
             )
         expression = ctx.expression()
         index = self.visitExpression(expression) if expression else -1
-        if ctx.LIST():
-            val = list_[index]
-        else:
-            val = list_.pop(index)
+        try:
+            if ctx.LIST():
+                val = list_[index]
+            else:
+                val = list_.pop(index)
+        except IndexError:
+            errors.error(
+                f"Index {index} hors des limites de la liste {list_name} = {list_}",
+                self.outstream,
+                ctx
+            )
         id1 = ctx.ID(1)
         if id1 is not None:
             self.call_stack[-1][1].set(id1.getText(), val)
