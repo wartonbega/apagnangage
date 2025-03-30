@@ -5,7 +5,7 @@ grammar APAGNANGAGE;
 ID: ('AP' | 'AGN' | 'AN')+;
 
 fragment DECIMAL_SEPARATOR: 'P' | 'GN' | 'N';
-INT: 'A'+ | ('AA' | DECIMAL_SEPARATOR) ('A'* DECIMAL_SEPARATOR)*; // using decimal separators requires at least two A or a DECIMAL_SEPARATOR at the beginning
+INT: 'A'+;
 
 PRINT: 'POV';
 
