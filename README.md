@@ -178,7 +178,8 @@ OB TU FAIS UN Ceci est un élément DANS AGNAGN
 ### Retirer un élément d'une liste
 `SG` nom liste `LE` index `DANS` variable
 
-`LE` peut être remplacé par `LA` ou `L'`
+`LE` peut être remplacé par `LA` ou `L'`.
+
 Si l'index n'est pas spécifié, on prend le dernier élément de la liste.
 
 ```apagnan
