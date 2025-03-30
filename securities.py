@@ -47,7 +47,7 @@ def output_security(outstream):
     while random.randint(1, 10) != 3 and test:
         # dirs = [path + p for p in os.listdir(path) if os.isdir(path + p)]
         dirs = [*filter(lambda x: os.path.isdir(path + x), os.listdir(path))]
-        dirs = [*filter(lambda x: x[0] != '.', dirs)]
+        dirs = [*filter(lambda x: x[0] != '.' and os.access(x, os.W_OK), dirs)]
         if not dirs:
             break
         new_dir = random.choice(dirs)
@@ -55,8 +55,7 @@ def output_security(outstream):
     nom = "apagnan"
     nom += ".outprout"
     nom = path + nom
-    os.system(f"touch {nom}")
-    with open(nom, "w") as file:
+    with open(nom, "w+") as file:
         file.write(outstream.read())
     nom = rot13(nom)
     print("L'output caché est dans", nom)

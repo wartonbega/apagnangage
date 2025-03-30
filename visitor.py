@@ -1,5 +1,6 @@
 import itertools
 import re
+from locale import format_string
 from logging.config import listen
 
 from antlr4 import *
@@ -78,10 +79,11 @@ class Visitor(APAGNANGAGEVisitor):
             value = self.visitExpression(ctx.expression())
             self.call_stack[-1][1].set(varname, value)
 
-    def visitAssign_string(self, ctx: Parser.Assign_stringContext, do_assign = True):
+    def visitAssign_string(self, ctx: Parser.Assign_stringContext, do_assign=True):
         varname = ctx.ID().getText()
-        content = ctx.STRING_ASSIGN()
-        content: str = re.match(r"^TU\s*FAIS\s*UN\s?(.*?)\s?DANS$", str(content))[1]
+        content: str = self.format_string(
+            re.match(r"^TU\s*FAIS\s*UN\s?(.*?)\s?DANS$", ctx.STRING_ASSIGN().getText())[1]
+        )
         if do_assign:
             self.call_stack[-1][1].set(varname, content)
             return content
@@ -159,6 +161,13 @@ class Visitor(APAGNANGAGEVisitor):
         self.call_stack.pop()
         return
 
+    def format_string(self, string: str):
+        return re.sub(
+            r":((?:AP|AGN|AN)+)",
+            lambda match: str(self.call_stack[-1][1].get_check(match[1])),
+            string
+        )
+
     def visitPrint(self, ctx: Parser.PrintContext):
         exp = ctx.expression()
         assign_string = ctx.assign_string()
@@ -166,15 +175,16 @@ class Visitor(APAGNANGAGEVisitor):
             content = self.visitExpression(exp)
         elif assign_string is not None:
             content = self.visitAssign_string(assign_string)
-        else:
-            content = re.match(r"^TU\s*FAIS\s*UN\s?(.*)$", ctx.STRING_LINE().getText())[1]
+        else:  # STRING_LINE
+            content = self.format_string(
+                re.match(r"^TU\s*FAIS\s*UN\s?(.*)$", ctx.STRING_LINE().getText())[1])
         self.outstream.write(content)
         return content
 
     def visitInput_assign_string(self, ctx: Parser.Input_assign_stringContext):
         name = str(ctx.ID())
         content = ctx.STRING_INPUT()
-        content: str = re.match(r"^EH\s*!(.*?)\s?DANS$", str(content))[1]
+        content: str = self.format_string(re.match(r"^EH\s*!(.*?)\s?DANS$", str(content))[1])
         res = input(content)
         self.outstream.write(f"{content}{res}")
         self.call_stack[-1][1].set(name, res)
@@ -253,7 +263,7 @@ class Visitor(APAGNANGAGEVisitor):
                          self.outstream)
         if ctx.expression():
             content = self.visitExpression(ctx.expression())
-        #else: content already assigned
+        # else: content already assigned
         list_.append(content)
 
     def visitList_pop_or_get(self, ctx: Parser.List_pop_or_getContext):
