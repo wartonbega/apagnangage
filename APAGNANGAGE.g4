@@ -38,14 +38,13 @@ fragment STRING_START: 'TU' WS* 'FAIS' WS* 'UN' WS?;
 fragment INPUT: 'EH' WS* '!';
 
 // no "DANS" or "BELECK" allowed in string
-fragment CHARS_NOT_ALLOWED_COMPLETIONS: 'D' ~'A' | 'DA' ~'N' | 'DAN' ~'S'
-                                      | 'B' ~'E' | 'BE' ~'L' | 'BEL' ~'E' | 'BELE' ~'C' | 'BELEC' ~'K';
-fragment MULTILINE_CHARS: ~[DB] | CHARS_NOT_ALLOWED_COMPLETIONS;
+fragment CHARS_NOT_ALLOWED_COMPLETIONS: 'D' ~[A\n] | 'DA' ~[N\n] | 'DAN' ~[S\n]
+                                      | 'B' ~[E\n] | 'BE' ~[L\n] | 'BEL' ~[E\n] | 'BELE' ~[C\n] | 'BELEC' ~[K\n];
 fragment CHARS: ~[DB\n] | CHARS_NOT_ALLOWED_COMPLETIONS;
 
-STRING_ASSIGN: STRING_START MULTILINE_CHARS*? WS? ASSIGN;
 STRING_LINE: STRING_START CHARS* BLOCK_END?; // last BLOCK_END for inline string
-STRING_INPUT: INPUT MULTILINE_CHARS*? WS? ASSIGN;
+STRING_ASSIGN: STRING_START CHARS*? ' '? ASSIGN;
+STRING_INPUT: INPUT CHARS*? ' '? ASSIGN;
 
 LIST: 'OB';
 LIST_POP: 'SG';
@@ -99,7 +98,7 @@ operator
     | EQUALS
     ;
 
-expression 
+expression
     : ( operator
       | function_call
       | expression_int
@@ -154,7 +153,7 @@ function_def
     ;
 
 return
-    : RETURN expression ?
+    : RETURN (expression ? | STRING_LINE)
     ;
 
 list_def
