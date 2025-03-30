@@ -25,7 +25,7 @@ if __name__ == '__main__':
         epilog="POV TU FAIT UN APAGNAN DANS L'INTERPRÉTEUR DE L'APAGNANGAGE (APAGNAAAAAAAAAAA)",
     )
     argument_parser.add_argument("filename")
-    argument_parser.add_argument("--enlève_toute_les_sécuritées", const=True, nargs="?")
+    argument_parser.add_argument("--enlève_toutes_les_sécurités", const=True, nargs="?")
     # parser.add_argument("-t", "--tree", const=True, nargs="?", help="Affiche l'arbre de syntaxe abstrait")
     args = argument_parser.parse_args()
     input_file_name = args.filename
