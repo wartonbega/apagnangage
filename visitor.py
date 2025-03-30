@@ -194,10 +194,6 @@ class Visitor(APAGNANGAGEVisitor):
         if id is not None:
             id = id.getText()
             count = self.call_stack[-1][1].get_check(id)
-            if not isinstance(count, int):
-                errors.error(
-                    "Le max du compteur doit être de type int (on et pas dans python avec dé sale itérateur)",
-                    self.outstream)
             return count
         count = len(ctx.LOOP_COUNTER())
         if count == 0:
@@ -208,16 +204,22 @@ class Visitor(APAGNANGAGEVisitor):
     def visitLoop(self, ctx: Parser.LoopContext):
         idx_name = ctx.ID()
         count = self.visitLoop_counter(ctx.loop_counter())
-        for i in range(count) if count is not None else itertools.count():
-            if idx_name is not None:
-                name = idx_name.getText()
-                self.call_stack[-1][1].set(name, i)
-            ret = self.visitBlock(ctx.block())
-            match ret:
-                case Break():
-                    break
-                case Return(val):
-                    return Return(val)
+        try:
+            for i in (range(count) if isinstance(count,
+                                                 int) else count) if count is not None else itertools.count():
+                if idx_name is not None:
+                    name = idx_name.getText()
+                    self.call_stack[-1][1].set(name, i)
+                ret = self.visitBlock(ctx.block())
+                match ret:
+                    case Break():
+                        break
+                    case Return(val):
+                        return Return(val)
+        except TypeError:
+            errors.error(
+                f"{ctx.loop_counter().getText()} ne peut pas être utilisé pour une boucle (vaut {count if count is not None else 'l\'infini'})",
+                self.outstream)
 
     # Visit a parse tree produced by Parser#if.
     def visitIf(self, ctx: Parser.IfContext):
