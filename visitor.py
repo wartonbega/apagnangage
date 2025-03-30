@@ -115,8 +115,10 @@ class Visitor(APAGNANGAGEVisitor):
         if len(operators) != len(values) - 1:
             en_trop = values[len(operators): -1] if len(operators) < len(values) - 1 else operators[
                                                                                           len(values) - 1: -1]
+            en_trop = [x.text for x in en_trop]
             errors.error(
-                f"Il n'y pas assez d'opérateurs ou d'opérandes pour effectuer le calcul : il y a en trop {en_trop}",
+                f"Il n'y pas assez d'opérateurs ou d'opérandes pour effectuer le calcul : il y a en trop {en_trop}\n"
+                f"Expression: {ctx.getText()}",
                 self.outstream
             )
 
@@ -177,7 +179,7 @@ class Visitor(APAGNANGAGEVisitor):
             content = self.visitAssign_string(assign_string)
         else:  # STRING_LINE
             content = self.format_string(
-                re.match(r"^TU\s*FAIS\s*UN\s?(.*)$", ctx.STRING_LINE().getText())[1])
+                re.match(r"^TU\s*FAIS\s*UN\s?(.*?)(?:BELECK)?$", ctx.STRING_LINE().getText())[1])
         self.outstream.write(content)
         return content
 

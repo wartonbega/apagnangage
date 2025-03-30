@@ -37,11 +37,15 @@ fragment STRING_START: 'TU' WS* 'FAIS' WS* 'UN' WS?;
 
 fragment INPUT: 'EH' WS* '!';
 
-fragment NOT_ASSIGN: ~[D\n] | 'D' ~'A' | 'DA' ~'N' | 'DAN' ~'S';
+// no "DANS" or "BELECK" allowed in string
+fragment CHARS_NOT_ALLOWED_COMPLETIONS: 'D' ~'A' | 'DA' ~'N' | 'DAN' ~'S'
+                                      | 'B' ~'E' | 'BE' ~'L' | 'BEL' ~'E' | 'BELE' ~'C' | 'BELEC' ~'K';
+fragment MULTILINE_CHARS: ~[DB] | CHARS_NOT_ALLOWED_COMPLETIONS;
+fragment CHARS: ~[DB\n] | CHARS_NOT_ALLOWED_COMPLETIONS;
 
-STRING_ASSIGN: STRING_START NOT_ASSIGN*? WS? ASSIGN;
-STRING_LINE: STRING_START NOT_ASSIGN*; // no 'DANS' allowed in string
-STRING_INPUT: INPUT NOT_ASSIGN*? WS? ASSIGN;
+STRING_ASSIGN: STRING_START MULTILINE_CHARS*? WS? ASSIGN;
+STRING_LINE: STRING_START CHARS* BLOCK_END?; // last BLOCK_END for inline string
+STRING_INPUT: INPUT MULTILINE_CHARS*? WS? ASSIGN;
 
 LIST: 'OB';
 LIST_POP: 'SG';
