@@ -13,14 +13,6 @@ import securities
 from special_return import *
 
 
-def convert_int(node: TerminalNodeImpl) -> int:
-    sp = re.split("(P|GN|N)", node.getText())[::2]
-    n = 0
-    for k, slice in enumerate(reversed(sp)):
-        n += len(slice) * (10 ** k)
-    return n
-
-
 class VariableScope:
     def __init__(self, parent, outstream, **kwargs):
         self.vars = {**kwargs}
@@ -79,9 +71,25 @@ class Visitor(APAGNANGAGEVisitor):
 
     # Visit a parse tree produced by Parser#assignment.
     def visitAssignment(self, ctx: Parser.AssignmentContext):
-        varname = str(ctx.ID())
-        value = self.visitExpression(ctx.expression())
-        self.call_stack[-1][1].set(varname, value)
+        if ctx.assign_string():
+            self.visitAssign_string(ctx.assign_string())
+        else:
+            varname = ctx.ID().getText()
+            value = self.visitExpression(ctx.expression())
+            self.call_stack[-1][1].set(varname, value)
+
+    def visitAssign_string(self, ctx: Parser.Assign_stringContext, do_assign = True):
+        varname = ctx.ID().getText()
+        content = ctx.STRING_ASSIGN()
+        content: str = re.match(r"^TU\s*FAIS\s*UN\s?(.*?)\s?DANS$", str(content))[1]
+        if do_assign:
+            self.call_stack[-1][1].set(varname, content)
+            return content
+        else:
+            return content, varname
+
+    def visitExpression_int(self, ctx: Parser.Expression_intContext):
+        return len(ctx.INT().getText())
 
     # Visit a parse tree produced by Parser#expression.
     def visitExpression(self, ctx: Parser.ExpressionContext):
@@ -92,14 +100,12 @@ class Visitor(APAGNANGAGEVisitor):
             match exp:
                 case Parser.OperatorContext():
                     operators.append(exp.getChild(0).getSymbol())
-                case Parser.Function_callContext():
-                    values.append(self.visitFunction_call(exp))
-                case Parser.Expression_intContext():
-                    values.append(convert_int(exp))
                 case TerminalNode():  # C'est un identifiant
                     varname = str(exp.getText())
                     val = self.call_stack[-1][1].get_check(varname)
                     values.append(val)
+                case _:
+                    values.append(self.visit(exp))
 
         aggregate = values[0]
 
@@ -152,13 +158,6 @@ class Visitor(APAGNANGAGEVisitor):
 
         self.call_stack.pop()
         return
-
-    def visitAssign_string(self, ctx: Parser.Assign_stringContext):
-        name = str(ctx.ID())
-        content = ctx.STRING_ASSIGN()
-        content: str = re.match(r"^TU\s*FAIS\s*UN\s?(.*?)\s?DANS$", str(content))[1]
-        self.call_stack[-1][1].set(name, content)
-        return content
 
     def visitPrint(self, ctx: Parser.PrintContext):
         exp = ctx.expression()
@@ -243,18 +242,26 @@ class Visitor(APAGNANGAGEVisitor):
         self.call_stack[-1][1].set(ctx.ID().getText(), [])
 
     def visitList_append(self, ctx: Parser.List_appendContext):
-        list_name = ctx.ID().getText()
+        if ctx.assign_string():
+            content, list_name = self.visitAssign_string(ctx.assign_string(), False)
+        else:
+            list_name = ctx.ID().getText()
+            content = None
         list_ = self.call_stack[-1][1].get_check(list_name)
         if not isinstance(list_, list):
-            errors.error(f"{list_name} n'est pas une liste, on ne peut rien y ajouter", self.outstream)
-        list_value = self.visitExpression(ctx.expression())
-        list_.append(list_value)
+            errors.error(f"{list_name} n'est pas une liste, on ne peut rien y ajouter",
+                         self.outstream)
+        if ctx.expression():
+            content = self.visitExpression(ctx.expression())
+        #else: content already assigned
+        list_.append(content)
 
     def visitList_pop_or_get(self, ctx: Parser.List_pop_or_getContext):
         list_name = ctx.ID(0).getText()
         list_ = self.call_stack[-1][1].get_check(list_name)
         if not isinstance(list_, list):
-            errors.error(f"{list_name} n'est pas une liste, on ne peut rien y ajouter", self.outstream)
+            errors.error(f"{list_name} n'est pas une liste, on ne peut rien y ajouter",
+                         self.outstream)
         expression = ctx.expression()
         index = self.visitExpression(expression) if expression else -1
         if ctx.LIST():
@@ -264,3 +271,4 @@ class Visitor(APAGNANGAGEVisitor):
         id1 = ctx.ID(1)
         if id1 is not None:
             self.call_stack[-1][1].set(id1.getText(), val)
+        return val

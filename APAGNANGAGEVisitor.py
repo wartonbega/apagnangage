@@ -24,6 +24,11 @@ class APAGNANGAGEVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by APAGNANGAGEParser#assign_string.
+    def visitAssign_string(self, ctx:APAGNANGAGEParser.Assign_stringContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by APAGNANGAGEParser#expression_int.
     def visitExpression_int(self, ctx:APAGNANGAGEParser.Expression_intContext):
         return self.visitChildren(ctx)
@@ -41,11 +46,6 @@ class APAGNANGAGEVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by APAGNANGAGEParser#function_call.
     def visitFunction_call(self, ctx:APAGNANGAGEParser.Function_callContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by APAGNANGAGEParser#assign_string.
-    def visitAssign_string(self, ctx:APAGNANGAGEParser.Assign_stringContext):
         return self.visitChildren(ctx)
 
 

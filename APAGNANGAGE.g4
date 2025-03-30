@@ -37,12 +37,15 @@ fragment STRING_START: 'TU' WS* 'FAIS' WS* 'UN' WS?;
 
 fragment INPUT: 'EH' WS* '!';
 
-STRING_ASSIGN: STRING_START (.*?) WS? ASSIGN;
-STRING_LINE: STRING_START ((~[D\n] | 'D' ~'A' | 'DA' ~'N' | 'DAN' ~'S')*); // no 'DANS' allowed in string
-STRING_INPUT: INPUT (.*?) WS? ASSIGN;
+fragment NOT_ASSIGN: ~[D\n] | 'D' ~'A' | 'DA' ~'N' | 'DAN' ~'S';
+
+STRING_ASSIGN: STRING_START NOT_ASSIGN*? WS? ASSIGN;
+STRING_LINE: STRING_START NOT_ASSIGN*; // no 'DANS' allowed in string
+STRING_INPUT: INPUT NOT_ASSIGN*? WS? ASSIGN;
 
 LIST: 'OB';
 LIST_POP: 'SG';
+LIST_INDEX: 'LE' | 'LA';
 
 COMMENT: 'CRARI' (~'\n')* -> skip;
 
@@ -60,7 +63,6 @@ statement
     | function_call
     | function_def
     | print
-    | assign_string
     | input_assign_string
     | loop
     | if
@@ -74,6 +76,11 @@ statement
 
 assignment
     : expression ASSIGN ID
+    | assign_string
+    ;
+
+assign_string
+    : STRING_ASSIGN ID
     ;
 
 expression_int
@@ -92,16 +99,13 @@ expression
     : ( operator
       | function_call
       | expression_int
+      | list_pop_or_get
       | ID
       ) +
     ;
 
 function_call
     : FUNCTION_CALL ID
-    ;
-
-assign_string
-    : STRING_ASSIGN ID
     ;
 
 print
@@ -154,13 +158,10 @@ list_def
     ;
 
 list_append
-    : LIST expression ASSIGN ID
+    : LIST (expression ASSIGN ID | assign_string)
     ;
 
 list_pop_or_get // expression is the index
     : LIST ? // if LIST: get, else: pop
-      LIST_POP ID
-      ( (PLUS expression) ? (ASSIGN ID)?
-      | PLUS STRING_ASSIGN ID
-      )
+      LIST_POP ID (LIST_INDEX expression) ? (ASSIGN ID)?
     ;
