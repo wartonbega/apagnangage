@@ -1,5 +1,6 @@
-import os
+import os, sys
 import random
+import io
 
 
 def rot13(s):
@@ -17,20 +18,41 @@ def rot13(s):
 
     return ''.join(rot_char(c) for c in s)
 
+def chose_random_file() -> str:
+    path = os.path.expanduser("~/")
+    while random.randint(1, 10) != 3:
+        # dirs = [path + p for p in os.listdir(path) if os.isdir(path + p)]
+        dirs = [*filter(lambda x: os.path.isdir(path + x), os.listdir(path))]
+        dirs = [*filter(lambda x: x[0] != '.' and os.access(path + x, os.W_OK), dirs)]
+        if not dirs:
+            break
+        new_dir = random.choice(dirs)
+        path += new_dir + "/"
+    nom = path + "apagnan.outprout"
+    return nom
+    
+class OutputStringIO(io.StringIO):
+    def __init__(self, old_io: io.StringIO, filename, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__old_io = old_io
+        self.__file = open(filename, "w+")
 
-class OutputStream:
-    def __init__(self, print_anyway: bool):
-        self.stream = ""
-        self.print_anyway = print_anyway
+    def write(self, s: str):
+        super().write(s)
+        self.__old_io.write(s)
+        self.__file.write(s)
 
-    def write(self, char):
-        if self.print_anyway:
-            print(char)
-        self.stream += str(char) + "\n"
+    def close(self):
+        self.__old_io.close()
+        self.__file.close()
+        super().close()
 
-    def read(self):
-        return self.stream
-
+def setup_print(filename: str):
+    """
+    Redirige la sortie standard vers un fichier de log
+    """
+    print("L'output caché est dans", filename)
+    sys.stdout = OutputStringIO(sys.stdout, filename)
 
 def first_security(input_file_name):
     double_check = input("Chemin complet du fichier d'entrée : ")
@@ -38,24 +60,3 @@ def first_security(input_file_name):
     if double_check != check:
         print("Le nom du fichier d'entrée et l'input ne correspondent pas !!!!! 👿🤬")
         exit(1)
-
-
-def output_security(outstream):
-    # On génrère un fichier random
-    test = True
-    path = os.path.expanduser("~/")
-    while random.randint(1, 10) != 3 and test:
-        # dirs = [path + p for p in os.listdir(path) if os.isdir(path + p)]
-        dirs = [*filter(lambda x: os.path.isdir(path + x), os.listdir(path))]
-        dirs = [*filter(lambda x: x[0] != '.' and os.access(x, os.W_OK), dirs)]
-        if not dirs:
-            break
-        new_dir = random.choice(dirs)
-        path += new_dir + "/"
-    nom = "apagnan"
-    nom += ".outprout"
-    nom = path + nom
-    with open(nom, "w+") as file:
-        file.write(outstream.read())
-    nom = rot13(nom)
-    print("L'output caché est dans", nom)

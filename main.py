@@ -28,6 +28,7 @@ if __name__ == '__main__':
     argument_parser.add_argument("filename", nargs="?")
     argument_parser.add_argument("--enlève_toutes_les_sécurités", const=True, nargs="?")
     argument_parser.add_argument("--input", "-i", action="store", type=str, help="Spécifie le programme à lancer directement en ligne de commande")
+    argument_parser.add_argument("--sortie", "-s", help="Spécifie le fichier de log de sortie (pas random)")
     # parser.add_argument("-t", "--tree", const=True, nargs="?", help="Affiche l'arbre de syntaxe abstrait")
     args = argument_parser.parse_args()
     if args.filename:
@@ -39,16 +40,18 @@ if __name__ == '__main__':
     else:
         argument_parser.print_help()
         sys.exit()
+    log_file = securities.chose_random_file()
+    if args.sortie:
+        log_file = args.sortie
+
     no_security = False
     if args.enlève_toutes_les_sécurités:
         no_security = True
 
-
-
-    if not no_security and input_file_name is not None:
-        securities.first_security(input_file_name)
-
-    output_stream = securities.OutputStream(no_security)
+    if not no_security:
+        if input_file_name is not None:
+            securities.first_security(input_file_name)
+        securities.setup_print(log_file)
 
     #################################################
     # Parsing du/des fichiers d'entrée              #
@@ -60,12 +63,9 @@ if __name__ == '__main__':
         print("syntax errors")
     else:
         try:
-            vinterp = visitor.Visitor(output_stream)
+            vinterp = visitor.Visitor()
             vinterp.visit(parse_tree)
         except Exception as e:
             print(
                 "Il y a manifestement un bug dans l'apagnangage. Ça doit être de ta faute. \n Quoi ??? Tu a cassé l'apagnangge. RAAAAAAAAAAAAh👹🤬🤯😵")
             traceback.print_exc()
-
-    if not no_security:
-        securities.output_security(output_stream)

@@ -11,9 +11,8 @@ from special_return import *
 
 
 class VariableScope:
-    def __init__(self, parent, outstream, **kwargs):
+    def __init__(self, parent, **kwargs):
         self.vars = {**kwargs}
-        self.outstream = outstream
         self.parent: VariableScope = parent
 
     def varExist(self, varname):
@@ -32,14 +31,14 @@ class VariableScope:
             return self.vars[varname]
         if self.parent is not None and self.parent.varExist(varname):
             return self.parent.get(varname)
-        errors.error(f"La variable {varname} n'existe pas", self.outstream, ctx)
+        errors.error(f"La variable {varname} n'existe pas", ctx)
 
     def set(self, varname, value):
         self.vars[varname] = value
 
 
 class Visitor(APAGNANGAGEVisitor):
-    def __init__(self, outstream: securities.OutputStream):
+    def __init__(self):
         super().__init__()
 
         # Le principe est le suivant, chaque corps de fonction
@@ -48,13 +47,11 @@ class Visitor(APAGNANGAGEVisitor):
         # À chaque fois qu'il y a un nouvel appel (de fonction, et tout)
         # on le rajoute sur la pile d'appel, ainsi que l'instance de la table de variable associée
 
-        main_var_scope = VariableScope(None, outstream)
+        main_var_scope = VariableScope(None)
         self.current = "main"
         self.call_stack = [("main", main_var_scope)]
         self.functions: dict[str, Parser.StatementContext] = {}
 
-        # Un stream de caractère de sortie
-        self.outstream = outstream
 
     # Visit a parse tree produced by Parser#program.
     def visitProgram(self, ctx: Parser.ProgramContext):
@@ -122,7 +119,6 @@ class Visitor(APAGNANGAGEVisitor):
             errors.error(
                 f"Il n'y pas assez d'opérateurs ou d'opérandes pour effectuer le calcul : il y a en trop {en_trop}\n"
                 f"Expression: {ctx.getText()}",
-                self.outstream,
                 ctx
             )
 
@@ -141,7 +137,7 @@ class Visitor(APAGNANGAGEVisitor):
                 case APAGNANGAGEParser.EQUALS:
                     aggregate = str(aggregate) == str(val)  # equals à la javascript
                 case _:
-                    errors.error(f"Opérateur {op.text} non supporté", self.outstream, ctx)
+                    errors.error(f"Opérateur {op.text} non supporté", ctx)
 
         return aggregate
 
@@ -149,9 +145,9 @@ class Visitor(APAGNANGAGEVisitor):
     def visitFunction_call(self, ctx: Parser.Function_callContext):
         name = str(ctx.ID())
         if name not in self.functions:
-            errors.error(f"fonction {name} inconnue", self.outstream, ctx)
+            errors.error(f"fonction {name} inconnue", ctx)
         self.current = name
-        vars = VariableScope(self.call_stack[-1][1], self.outstream)  # On duplique
+        vars = VariableScope(self.call_stack[-1][1])  # On duplique
         self.call_stack.append((name, vars))
         for statement in self.functions[name]:
             ret = self.visitStatement(statement)
@@ -160,7 +156,7 @@ class Visitor(APAGNANGAGEVisitor):
                     self.call_stack.pop()
                     return value
                 case Break():
-                    errors.error("Break en dehors d'une boucle", self.outstream, ctx)
+                    errors.error("Break en dehors d'une boucle", ctx)
                 case _:
                     continue
 
@@ -183,7 +179,7 @@ class Visitor(APAGNANGAGEVisitor):
             content = self.visitAssign_string(assign_string)
         else:  # STRING_LINE
             content = self.get_string_line(ctx.STRING_LINE())
-        self.outstream.write(content)
+        print(content)
         return content
 
     def get_string_line(self, string_line, ctx: ParserRuleContext | None = None):
@@ -197,7 +193,7 @@ class Visitor(APAGNANGAGEVisitor):
         content = ctx.STRING_INPUT()
         content: str = self.format_string(re.match(r"^EH\s*!(.*?)\s?DANS$", str(content))[1], ctx)
         res = input(content)
-        self.outstream.write(f"{content}{res}")
+        print(f"{content}{res}")
         self.call_stack[-1][1].set(name, res)
 
     def visitLoop_counter(self, ctx: Parser.Loop_counterContext):
@@ -230,7 +226,6 @@ class Visitor(APAGNANGAGEVisitor):
         except TypeError:
             errors.error(
                 f"{ctx.loop_counter().getText()} ne peut pas être utilisé pour une boucle (vaut {count if count is not None else 'l\'infini'})",
-                self.outstream,
                 ctx
             )
 
@@ -285,7 +280,6 @@ class Visitor(APAGNANGAGEVisitor):
         if not isinstance(list_, list):
             errors.error(
                 f"{list_name} n'est pas une liste, on ne peut rien y ajouter",
-                self.outstream,
                 ctx
             )
         if ctx.expression():
@@ -299,7 +293,6 @@ class Visitor(APAGNANGAGEVisitor):
         if not isinstance(list_, list):
             errors.error(
                 f"{list_name} n'est pas une liste, on ne peut rien y ajouter",
-                self.outstream,
                 ctx
             )
         expression = ctx.expression()
@@ -312,7 +305,6 @@ class Visitor(APAGNANGAGEVisitor):
         except IndexError:
             errors.error(
                 f"Index {index} hors des limites de la liste {list_name} = {list_}",
-                self.outstream,
                 ctx
             )
         id1 = ctx.ID(1)
