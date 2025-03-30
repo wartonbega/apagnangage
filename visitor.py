@@ -235,6 +235,12 @@ class Visitor(APAGNANGAGEVisitor):
                 case Break():
                     return Break()
 
+    def visitIncrement(self, ctx: APAGNANGAGEParser.IncrementContext):
+        varname = ctx.ID().getText()
+        val = self.call_stack[-1][1].get_check(varname) + 1
+        self.call_stack[-1][1].set(varname, val)
+        return val
+
     # Visit a parse tree produced by Parser#function_def.
     def visitFunction_def(self, ctx: Parser.Function_defContext):
         # On ne visite pas le corps de la fonction
