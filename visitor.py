@@ -11,11 +11,7 @@ from special_return import *
 
 
 def convert_int(node: TerminalNodeImpl) -> int:
-    sp = re.split("(P|GN|N)", node.getText())[::2]
-    n = 0
-    for k, slice in enumerate(reversed(sp)):
-        n += len(slice) * (10 ** k)
-    return n
+    return len(node.getText())
 
 
 class VariableScope:
