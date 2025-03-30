@@ -123,7 +123,7 @@ class Visitor(APAGNANGAGEVisitor):
                 case APAGNANGAGEParser.DIVIDE:
                     aggregate /= val
                 case APAGNANGAGEParser.EQUALS:
-                    aggregate = str(aggregate) == str(val) # equals à la javascript
+                    aggregate = str(aggregate) == str(val)  # equals à la javascript
                 case _:
                     errors.error(f"Opérateur {op.text} non supporté", self.outstream)
 
@@ -151,23 +151,24 @@ class Visitor(APAGNANGAGEVisitor):
         self.call_stack.pop()
         return
 
-
-    # Visit a parse tree produced by Parser#print.
-    def visitPrint(self, ctx: Parser.PrintContext):
-        exp = ctx.expression()
-        if exp is not None:
-            exp = self.visitExpression(exp)
-        else:
-            exp = re.match(r"^TU\s*FAIS\s*UN\s?(.*)$", ctx.STRING_LINE().getText())[1]
-        self.outstream.write(exp)
-
-    # Visit a parse tree produced by Parser#print_assign_string.
-    def visitPrint_assign_string(self, ctx: Parser.Print_assign_stringContext):
+    def visitAssign_string(self, ctx: Parser.Assign_stringContext):
         name = str(ctx.ID())
         content = ctx.STRING_ASSIGN()
         content: str = re.match(r"^TU\s*FAIS\s*UN\s?(.*?)\s?DANS$", str(content))[1]
         self.call_stack[-1][1].set(name, content)
-   
+        return content
+
+    def visitPrint(self, ctx: Parser.PrintContext):
+        exp = ctx.expression()
+        assign_string = ctx.assign_string()
+        if exp is not None:
+            content = self.visitExpression(exp)
+        elif assign_string is not None:
+            content = self.visitAssign_string(assign_string)
+        else:
+            content = re.match(r"^TU\s*FAIS\s*UN\s?(.*)$", ctx.STRING_LINE().getText())[1]
+        self.outstream.write(content)
+        return content
 
     def visitInput_assign_string(self, ctx: Parser.Input_assign_stringContext):
         name = str(ctx.ID())
@@ -206,7 +207,6 @@ class Visitor(APAGNANGAGEVisitor):
                     break
                 case Return(val):
                     return Return(val)
-
 
     # Visit a parse tree produced by Parser#if.
     def visitIf(self, ctx: Parser.IfContext):

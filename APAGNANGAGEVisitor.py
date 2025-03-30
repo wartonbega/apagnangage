@@ -44,13 +44,13 @@ class APAGNANGAGEVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by APAGNANGAGEParser#print.
-    def visitPrint(self, ctx:APAGNANGAGEParser.PrintContext):
+    # Visit a parse tree produced by APAGNANGAGEParser#assign_string.
+    def visitAssign_string(self, ctx:APAGNANGAGEParser.Assign_stringContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by APAGNANGAGEParser#print_assign_string.
-    def visitPrint_assign_string(self, ctx:APAGNANGAGEParser.Print_assign_stringContext):
+    # Visit a parse tree produced by APAGNANGAGEParser#print.
+    def visitPrint(self, ctx:APAGNANGAGEParser.PrintContext):
         return self.visitChildren(ctx)
 
 
@@ -66,11 +66,6 @@ class APAGNANGAGEVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by APAGNANGAGEParser#loop.
     def visitLoop(self, ctx:APAGNANGAGEParser.LoopContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by APAGNANGAGEParser#logic.
-    def visitLogic(self, ctx:APAGNANGAGEParser.LogicContext):
         return self.visitChildren(ctx)
 
 
