@@ -123,9 +123,9 @@ class Visitor(APAGNANGAGEVisitor):
                 case APAGNANGAGEParser.DIVIDE:
                     aggregate /= val
                 case APAGNANGAGEParser.EQUALS:
-                    aggregate = aggregate == val
+                    aggregate = str(aggregate) == str(val) # equals à la javascript
                 case _:
-                    errors.error(f"Opérateur {op.text} non supporté")
+                    errors.error(f"Opérateur {op.text} non supporté", self.outstream)
 
         return aggregate
 
@@ -198,8 +198,8 @@ class Visitor(APAGNANGAGEVisitor):
         count = self.visitLoop_counter(ctx.loop_counter())
         for i in range(count) if count is not None else itertools.count():
             if idx_name is not None:
-                idx_name = idx_name.getText()
-                self.call_stack[-1][1].set(idx_name, i)
+                name = idx_name.getText()
+                self.call_stack[-1][1].set(name, i)
             ret = self.visitBlock(ctx.block())
             match ret:
                 case Break():
