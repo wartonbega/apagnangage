@@ -30,7 +30,7 @@ if __name__ == '__main__':
     args = argument_parser.parse_args()
     input_file_name = args.filename
     no_security = False
-    if args.enlève_toute_les_sécuritées:
+    if args.enlève_toutes_les_sécurités:
         no_security = True
 
     input_stream = uf.readfile(input_file_name)
