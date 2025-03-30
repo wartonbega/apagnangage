@@ -69,11 +69,6 @@ class APAGNANGAGEVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by APAGNANGAGEParser#logic.
-    def visitLogic(self, ctx:APAGNANGAGEParser.LogicContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by APAGNANGAGEParser#if.
     def visitIf(self, ctx:APAGNANGAGEParser.IfContext):
         return self.visitChildren(ctx)
@@ -96,6 +91,21 @@ class APAGNANGAGEVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by APAGNANGAGEParser#return.
     def visitReturn(self, ctx:APAGNANGAGEParser.ReturnContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by APAGNANGAGEParser#list_def.
+    def visitList_def(self, ctx:APAGNANGAGEParser.List_defContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by APAGNANGAGEParser#list_append.
+    def visitList_append(self, ctx:APAGNANGAGEParser.List_appendContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by APAGNANGAGEParser#list_pop_or_get.
+    def visitList_pop_or_get(self, ctx:APAGNANGAGEParser.List_pop_or_getContext):
         return self.visitChildren(ctx)
 
 

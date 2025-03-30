@@ -1,5 +1,7 @@
 import itertools
 import re
+from logging.config import listen
+
 from antlr4 import *
 from antlr4.tree.Tree import TerminalNodeImpl
 
@@ -236,3 +238,29 @@ class Visitor(APAGNANGAGEVisitor):
     # Visit a parse tree produced by Parser#return.
     def visitReturn(self, ctx: Parser.ReturnContext):
         return Return(self.visitExpression(ctx.expression()))
+
+    def visitList_def(self, ctx: Parser.List_defContext):
+        self.call_stack[-1][1].set(ctx.ID().getText(), [])
+
+    def visitList_append(self, ctx: Parser.List_appendContext):
+        list_name = ctx.ID().getText()
+        list_ = self.call_stack[-1][1].get_check(list_name)
+        if not isinstance(list_, list):
+            errors.error(f"{list_name} n'est pas une liste, on ne peut rien y ajouter", self.outstream)
+        list_value = self.visitExpression(ctx.expression())
+        list_.append(list_value)
+
+    def visitList_pop_or_get(self, ctx: Parser.List_pop_or_getContext):
+        list_name = ctx.ID(0).getText()
+        list_ = self.call_stack[-1][1].get_check(list_name)
+        if not isinstance(list_, list):
+            errors.error(f"{list_name} n'est pas une liste, on ne peut rien y ajouter", self.outstream)
+        expression = ctx.expression()
+        index = self.visitExpression(expression) if expression else -1
+        if ctx.LIST():
+            val = list_[index]
+        else:
+            val = list_.pop(index)
+        id1 = ctx.ID(1)
+        if id1 is not None:
+            self.call_stack[-1][1].set(id1.getText(), val)

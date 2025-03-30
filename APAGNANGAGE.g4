@@ -41,6 +41,9 @@ STRING_ASSIGN: STRING_START (.*?) WS? ASSIGN;
 STRING_LINE: STRING_START ((~[D\n] | 'D' ~'A' | 'DA' ~'N' | 'DAN' ~'S')*); // no 'DANS' allowed in string
 STRING_INPUT: INPUT (.*?) WS? ASSIGN;
 
+LIST: 'OB';
+LIST_POP: 'SG';
+
 COMMENT: 'CRARI' (~'\n')* -> skip;
 
 WS_: WS+ -> skip;
@@ -64,6 +67,9 @@ statement
     | BREAK
     | return
     | increment
+    | list_def
+    | list_append
+    | list_pop_or_get
     ;
 
 assignment
@@ -115,12 +121,6 @@ loop
     : LOOP ID? LOOP loop_counter block
     ;
 
-
-logic
-    : expression EQUALS expression
-    ;
-
-// Je met plutot une expression qu'une logique 
 if
     : IF expression block
     ;
@@ -147,4 +147,20 @@ function_def
 
 return
     : RETURN expression ?
+    ;
+
+list_def
+    : LIST ID
+    ;
+
+list_append
+    : LIST expression ASSIGN ID
+    ;
+
+list_pop_or_get // expression is the index
+    : LIST ? // if LIST: get, else: pop
+      LIST_POP ID
+      ( (PLUS expression) ? (ASSIGN ID)?
+      | PLUS STRING_ASSIGN ID
+      )
     ;
