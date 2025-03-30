@@ -1,3 +1,4 @@
+import itertools
 import re
 from antlr4 import *
 from antlr4.tree.Tree import TerminalNodeImpl
@@ -186,20 +187,25 @@ class Visitor(APAGNANGAGEVisitor):
                     "Le max du compteur doit être de type int (on et pas dans python avec dé sale itérateur)",
                     self.outstream)
             return count
-        return len(ctx.LOOP_COUNTER())
+        count = len(ctx.LOOP_COUNTER())
+        if count == 0:
+            return None
+        return count
 
     # Visit a parse tree produced by Parser#loop.
     def visitLoop(self, ctx: Parser.LoopContext):
         idx_name = ctx.ID()
         count = self.visitLoop_counter(ctx.loop_counter())
-        if idx_name is not None:
-            idx_name = idx_name.getText()
-            for i in range(count):
+        for i in range(count) if count is not None else itertools.count():
+            if idx_name is not None:
+                idx_name = idx_name.getText()
                 self.call_stack[-1][1].set(idx_name, i)
-                self.visitBlock(ctx.block())
-        else:
-            for _ in range(count):
-                self.visitBlock(ctx.block())
+            ret = self.visitBlock(ctx.block())
+            match ret:
+                case Break():
+                    break
+                case Return(val):
+                    return Return(val)
 
 
     # Visit a parse tree produced by Parser#if.
@@ -216,7 +222,7 @@ class Visitor(APAGNANGAGEVisitor):
                 case Return(val):
                     return Return(val)
                 case Break():
-                    return
+                    return Break()
 
     # Visit a parse tree produced by Parser#function_def.
     def visitFunction_def(self, ctx: Parser.Function_defContext):

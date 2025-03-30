@@ -107,7 +107,7 @@ input_assign_string
     ;
 
 loop_counter
-    : LOOP_COUNTER *
+    : LOOP_COUNTER * // 0 -> boucle infinie
     | ID
     ;
 
