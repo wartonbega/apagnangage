@@ -1,6 +1,7 @@
 # Parser pour les options de bash (-o -i --HEEEEEELP ...)
 import os
 import argparse
+import sys
 import traceback
 
 # Lexer et parser APAGNAN
@@ -24,18 +25,27 @@ if __name__ == '__main__':
         description="Interpète l'APAGNANGAGE",
         epilog="POV TU FAIT UN APAGNAN DANS L'INTERPRÉTEUR DE L'APAGNANGAGE (APAGNAAAAAAAAAAA)",
     )
-    argument_parser.add_argument("filename")
+    argument_parser.add_argument("filename", nargs="?")
     argument_parser.add_argument("--enlève_toutes_les_sécurités", const=True, nargs="?")
+    argument_parser.add_argument("--input", "-i", action="store", type=str, help="Spécifie le programme à lancer directement en ligne de commande")
     # parser.add_argument("-t", "--tree", const=True, nargs="?", help="Affiche l'arbre de syntaxe abstrait")
     args = argument_parser.parse_args()
-    input_file_name = args.filename
+    if args.filename:
+        input_file_name = args.filename
+        input_stream = uf.readfile(input_file_name)
+    elif args.input:
+        input_file_name = None
+        input_stream = args.input
+    else:
+        argument_parser.print_help()
+        sys.exit()
     no_security = False
     if args.enlève_toutes_les_sécurités:
         no_security = True
 
-    input_stream = uf.readfile(input_file_name)
 
-    if not no_security:
+
+    if not no_security and input_file_name is not None:
         securities.first_security(input_file_name)
 
     output_stream = securities.OutputStream(no_security)
