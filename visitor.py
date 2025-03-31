@@ -1,19 +1,26 @@
 import itertools
 import re
+import os
+import traceback
 
 from antlr4 import *
 
 import errors
 import securities
+import useful
+
+from APAGNANGAGELexer import APAGNANGAGELexer as Lexer, APAGNANGAGELexer
 from APAGNANGAGEParser import APAGNANGAGEParser as Parser, APAGNANGAGEParser
 from APAGNANGAGEVisitor import APAGNANGAGEVisitor
 from special_return import *
 
+PATH_HANDLER = useful.PathImporter()
 
 class VariableScope:
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, filename, **kwargs):
         self.vars = {**kwargs}
         self.parent: VariableScope = parent
+        self.filename = filename
 
     def varExist(self, varname):
         if varname in self.vars:
@@ -31,23 +38,25 @@ class VariableScope:
             return self.vars[varname]
         if self.parent is not None and self.parent.varExist(varname):
             return self.parent.get(varname)
-        errors.error(f"La variable {varname} n'existe pas", ctx)
+        errors.error(f"La variable {varname} n'existe pas", ctx, self.filename)
 
     def set(self, varname, value):
         self.vars[varname] = value
 
 
 class Visitor(APAGNANGAGEVisitor):
-    def __init__(self):
+    def __init__(self, filename):
         super().__init__()
 
+        # Il est sympa de savoir à tout moment dans quel fichier on execute du code
+        self.filename = filename
+        
         # Le principe est le suivant, chaque corps de fonction
         # est stockée dans functions (associé au nom de la fonction)
 
         # À chaque fois qu'il y a un nouvel appel (de fonction, et tout)
         # on le rajoute sur la pile d'appel, ainsi que l'instance de la table de variable associée
-
-        main_var_scope = VariableScope(None)
+        main_var_scope = VariableScope(None, self.filename)
         self.current = "main"
         self.call_stack = [("main", main_var_scope)]
         self.functions: dict[str, Parser.StatementContext] = {}
@@ -119,7 +128,8 @@ class Visitor(APAGNANGAGEVisitor):
             errors.error(
                 f"Il n'y pas assez d'opérateurs ou d'opérandes pour effectuer le calcul : il y a en trop {en_trop}\n"
                 f"Expression: {ctx.getText()}",
-                ctx
+                ctx,
+                self.filename,
             )
 
         # Pour le moment on se moque de l'ordre des opérations, on traite tous les opérateurs dans l'ordre
@@ -137,7 +147,7 @@ class Visitor(APAGNANGAGEVisitor):
                 case APAGNANGAGEParser.EQUALS:
                     aggregate = str(aggregate) == str(val)  # equals à la javascript
                 case _:
-                    errors.error(f"Opérateur {op.text} non supporté", ctx)
+                    errors.error(f"Opérateur {op.text} non supporté", ctx, self.filename)
 
         return aggregate
 
@@ -145,9 +155,9 @@ class Visitor(APAGNANGAGEVisitor):
     def visitFunction_call(self, ctx: Parser.Function_callContext):
         name = str(ctx.ID())
         if name not in self.functions:
-            errors.error(f"fonction {name} inconnue", ctx)
+            errors.error(f"fonction {name} inconnue", ctx, self.filename)
         self.current = name
-        vars = VariableScope(self.call_stack[-1][1])  # On duplique
+        vars = VariableScope(self.call_stack[-1][1], self.filename)  # On duplique
         self.call_stack.append((name, vars))
         for statement in self.functions[name]:
             ret = self.visitStatement(statement)
@@ -156,7 +166,7 @@ class Visitor(APAGNANGAGEVisitor):
                     self.call_stack.pop()
                     return value
                 case Break():
-                    errors.error("Break en dehors d'une boucle", ctx)
+                    errors.error("Break en dehors d'une boucle", ctx, self.filename)
                 case _:
                     continue
 
@@ -226,7 +236,8 @@ class Visitor(APAGNANGAGEVisitor):
         except TypeError:
             errors.error(
                 f"{ctx.loop_counter().getText()} ne peut pas être utilisé pour une boucle (vaut {count if count is not None else 'l\'infini'})",
-                ctx
+                ctx,
+                self.filename,
             )
 
     # Visit a parse tree produced by Parser#if.
@@ -280,7 +291,8 @@ class Visitor(APAGNANGAGEVisitor):
         if not isinstance(list_, list):
             errors.error(
                 f"{list_name} n'est pas une liste, on ne peut rien y ajouter",
-                ctx
+                ctx,
+                self.filename
             )
         if ctx.expression():
             content = self.visitExpression(ctx.expression())
@@ -293,7 +305,8 @@ class Visitor(APAGNANGAGEVisitor):
         if not isinstance(list_, list):
             errors.error(
                 f"{list_name} n'est pas une liste, on ne peut rien y ajouter",
-                ctx
+                ctx,
+                self.filename
             )
         expression = ctx.expression()
         index = self.visitExpression(expression) if expression else -1
@@ -305,9 +318,48 @@ class Visitor(APAGNANGAGEVisitor):
         except IndexError:
             errors.error(
                 f"Index {index} hors des limites de la liste {list_name} = {list_}",
-                ctx
+                ctx,
+                self.filename
             )
         id1 = ctx.ID(1)
         if id1 is not None:
             self.call_stack[-1][1].set(id1.getText(), val)
         return val
+
+    def visitImport_statement(self, ctx):
+        import_name = str(ctx.FILE_NAME()).strip()
+        import_name = re.match(r"J\s*'\s*AI\s*LA\s*REF\s*(.*)", import_name)[1]
+        PATH_HANDLER.get_into_dir(import_name)
+        file = PATH_HANDLER.get_total_path() + PATH_HANDLER.get_filename(import_name)
+        
+        if not os.path.isfile(file):
+            errors.error(
+                f"Le fichier '{file}' que t'essaie d'importer n'existe pas", 
+                ctx, 
+                self.filename
+            )
+        
+        with open(file, "r") as file:
+            input_stream = file.read()
+
+        # Même système que dans main : 
+        # On parse on lexe et on interpète ce qu'il faut
+        lexer = Lexer(InputStream(input_stream))
+        parser = Parser(CommonTokenStream(lexer))
+        parse_tree = parser.program()
+        if parser.getNumberOfSyntaxErrors() > 0:
+            print("syntax errors")
+        else:
+            try:
+                vinterp = Visitor(file)
+                vinterp.visit(parse_tree)
+                # On copie en plus les fonctions définies dans la librarie
+                for function_name, code in vinterp.functions.items():
+                    self.functions[function_name] = code
+            except Exception as e:
+                print(
+                    "Il y a manifestement un bug dans l'apagnangage. Ça doit être de ta faute. \n Quoi ??? Tu a cassé l'apagnangge. RAAAAAAAAAAAAh👹🤬🤯😵"
+                )
+                traceback.print_exc()
+                
+        PATH_HANDLER.get_out_dir()

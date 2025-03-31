@@ -109,5 +109,10 @@ class APAGNANGAGEVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by APAGNANGAGEParser#import_statement.
+    def visitImport_statement(self, ctx:APAGNANGAGEParser.Import_statementContext):
+        return self.visitChildren(ctx)
+
+
 
 del APAGNANGAGEParser

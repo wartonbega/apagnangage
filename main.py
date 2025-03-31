@@ -35,23 +35,26 @@ if __name__ == '__main__':
         input_file_name = args.filename
         input_stream = uf.readfile(input_file_name)
     elif args.input:
-        input_file_name = None
+        input_file_name = "Input"
         input_stream = args.input
     else:
         argument_parser.print_help()
         sys.exit()
-    log_file = securities.chose_random_file()
-    if args.sortie:
-        log_file = args.sortie
-
+        
     no_security = False
     if args.enlève_toutes_les_sécurités:
         no_security = True
 
     if not no_security:
+        log_file = securities.chose_random_file()
+        if args.sortie:
+            log_file = args.sortie
         if input_file_name is not None:
             securities.first_security(input_file_name)
         securities.setup_print(log_file)
+
+    # Mise en place du système d'import de fichier
+    visitor.PATH_HANDLER.get_into_dir(input_file_name)
 
     #################################################
     # Parsing du/des fichiers d'entrée              #
@@ -63,7 +66,7 @@ if __name__ == '__main__':
         print("syntax errors")
     else:
         try:
-            vinterp = visitor.Visitor()
+            vinterp = visitor.Visitor(input_file_name)
             vinterp.visit(parse_tree)
         except Exception as e:
             print(

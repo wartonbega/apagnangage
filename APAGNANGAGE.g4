@@ -39,6 +39,8 @@ IF: 'GENRE';
 
 fragment STRING_START: 'TU' WS* 'FAIS' WS* 'UN' WS?;
 
+fragment IMPORT: 'J' WS* '\'' WS* 'AI' WS* 'LA' WS* 'REF';
+
 fragment INPUT: 'EH' WS* '!';
 
 // no "DANS" or "BELECK" allowed in string
@@ -49,6 +51,8 @@ fragment CHARS: ~[DB\n] | CHARS_NOT_ALLOWED_COMPLETIONS;
 STRING_LINE: STRING_START CHARS* BLOCK_END?; // last BLOCK_END for inline string
 STRING_ASSIGN: STRING_START CHARS*? ' '? ASSIGN;
 STRING_INPUT: INPUT CHARS*? ' '? ASSIGN;
+
+FILE_NAME: IMPORT CHARS* BLOCK_END?; // The last BLOCK_END if the statement is inline
 
 LIST: 'OB';
 LIST_POP: 'SG';
@@ -79,6 +83,7 @@ statement
     | list_def
     | list_append
     | list_pop_or_get
+    | import_statement
     ;
 
 assignment
@@ -171,4 +176,8 @@ list_append
 list_pop_or_get // expression is the index
     : LIST ? // if LIST: get, else: pop
       LIST_POP ID (LIST_INDEX expression) ? (ASSIGN ID)?
+    ;
+
+import_statement
+    : FILE_NAME
     ;
