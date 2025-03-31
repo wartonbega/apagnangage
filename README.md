@@ -194,6 +194,14 @@ SG AGNAGN
 
 Même syntaxe que `SG` mais avec `OB` devant
 
+### Importer des fichiers source
+`J'AI LA REF chemin/vers/fichier.apagnan`
+
+importera toutes les fonctions présentes dans fichier.apagnan, et exécutera le code dedans.
+
+__Note :__
+    Ne garde pas en mémoire les variables définies.
+
 ---
 ## Pour recompiler le langage
 
